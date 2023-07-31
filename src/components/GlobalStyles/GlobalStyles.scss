@@ -10,6 +10,7 @@
     // Default layout
     --default-layout-header-height: 60px;
     --default-layout-width: 1150px;
+    --default-layout-horizontal-spacer: 24px;
 }
 
 * {
@@ -30,7 +31,9 @@ body {
     color: var(--text-color);
 }
 
-button, input, [tabindex] {
+button,
+input,
+[tabindex] {
     outline: none;
     border: none;
 }
