@@ -99,11 +99,33 @@
     }
 }
 
+// Actions
+.actions {
+    display: flex;
+    align-items: center;
+}
+
+.action-btn {
+    background-color: transparent;
+    font-size: 2rem;
+    color: rgb(22, 24, 35);
+    padding: 4px 12px;
+    cursor: pointer;
+}
+
 .more-btn {
     font-size: 2rem;
     margin-left: 28px;
     padding: 4px 8px;
     background-color: transparent;
     color: rgba(22, 24, 35, 0.75);
+    cursor: pointer;
+}
+
+.user-avatar {
+    width: 3.2rem;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-left: 12px;
     cursor: pointer;
 }
