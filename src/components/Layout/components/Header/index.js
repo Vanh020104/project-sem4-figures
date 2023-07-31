@@ -26,6 +26,8 @@ import images from '~/assets/images';
 import { Wrapper as PopperWrapper } from '~/components/Popper';
 import AccountItem from '~/components/AccountItem';
 import Menu from '~/components/Popper/Menu';
+import { MessageIcon } from '~/components/Icons';
+import Image from '~/components/Images';
 
 const cx = classNames.bind(styles);
 
@@ -150,9 +152,9 @@ function Header() {
                                     <FontAwesomeIcon icon={faCloudUpload} />
                                 </button>
                             </Tippy>
-                            {/* <button className={cx('action-btn')}>
-                                <FontAwesomeIcon icon={faMessage} />
-                            </button> */}
+                            <button className={cx('action-btn')}>
+                                <MessageIcon />
+                            </button>
                         </>
                     ) : (
                         <>
@@ -166,10 +168,11 @@ function Header() {
                     )}
                     <Menu items={currentUser ? userMenu : MENU_ITEMS} onChange={handleMenuChange}>
                         {currentUser ? (
-                            <img
+                            <Image
                                 className={cx('user-avatar')}
                                 src="https://p16-sign-sg.tiktokcdn.com/aweme/100x100/tos-alisg-avt-0068/da329be00ccf6371d6f48faca7b151f1.jpeg?x-expires=1690898400&x-signature=FEh4yO%2Bw%2FHNVrjWT2eK7Pi5bXto%3D"
                                 alt="Nguyen Phu Tam"
+                                // fallback="https://p16-sign-sg.tiktokcdn.com/aweme/100x100/tos-alisg-avt-0068/da329be00ccf6371d6f48faca7b151f1.jpeg?x-expires=1690898400&x-signature=FEh4yO%2Bw%2FHNVrjWT2eK7Pi5bXto%3D"
                             />
                         ) : (
                             <button className={cx('more-btn')}>
