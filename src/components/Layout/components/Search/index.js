@@ -10,6 +10,7 @@ import { Wrapper as PopperWrapper } from '~/components/Popper';
 import styles from './Search.module.scss';
 import { useDebounce } from '~/hooks';
 import * as searchServices from '~/apiServices/searchServices';
+import { SearchIcon } from '~/components/Icons';
 
 const cx = classNames.bind(styles);
 
@@ -49,6 +50,14 @@ function Search() {
     const handleHideResult = () => {
         setShowResult(false);
     };
+
+    const handleChange = (e) => {
+        const seachValue = e.target.value;
+        if (!seachValue.startsWith(' ')) {
+            setSearchValue(seachValue);
+        }
+    };
+
     return (
         <HeadlessTippy
             visible={showResult && searchResult.length > 0}
@@ -71,7 +80,7 @@ function Search() {
                     value={searchValue}
                     placeholder="Search accounts and videos"
                     spellCheck={false}
-                    onChange={(e) => setSearchValue(e.target.value)}
+                    onChange={handleChange}
                     onFocus={() => setShowResult(true)}
                 />
                 {!!searchValue && !loading && (
@@ -80,8 +89,8 @@ function Search() {
                     </button>
                 )}
                 {loading && <FontAwesomeIcon className={cx('loading')} icon={faSpinner} />}
-                <button className={cx('search-btn')}>
-                    <FontAwesomeIcon icon={faMagnifyingGlass} />
+                <button className={cx('search-btn')} onMouseDown={(e) => e.preventDefault()}>
+                    <SearchIcon />
                 </button>
             </div>
         </HeadlessTippy>
