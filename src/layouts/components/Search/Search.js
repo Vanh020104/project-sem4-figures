@@ -58,6 +58,17 @@ function Search() {
         }
     };
 
+    const renderResult = (attrs) => (
+        <div className={cx('search-result')} tabIndex="-1" {...attrs}>
+            <PopperWrapper>
+                <h4 className={cx('search-title')}>Accounts</h4>
+                {searchResult.map((result) => (
+                    <AccountItem key={result.id} data={result} />
+                ))}
+            </PopperWrapper>
+        </div>
+    );
+
     return (
         // Using a wrapper <div> -> solves Tippy warning
         <div>
@@ -65,16 +76,7 @@ function Search() {
                 visible={showResult && searchResult.length > 0}
                 appendTo={() => document.body}
                 interactive
-                render={(attrs) => (
-                    <div className={cx('search-result')} tabIndex="-1" {...attrs}>
-                        <PopperWrapper>
-                            <h4 className={cx('search-title')}>Accounts</h4>
-                            {searchResult.map((result) => (
-                                <AccountItem key={result.id} data={result} />
-                            ))}
-                        </PopperWrapper>
-                    </div>
-                )}
+                render={renderResult}
                 onClickOutside={handleHideResult}
             >
                 <div className={cx('search')}>
