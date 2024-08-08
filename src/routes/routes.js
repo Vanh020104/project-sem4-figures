@@ -5,21 +5,21 @@ import { HeaderOnly } from '~/layouts';
 
 // Pages
 import Home from '~/pages/Home';
-import Following from '~/pages/Following';
-import Profile from '~/pages/Profile';
-import Upload from '~/pages/Upload';
-import Search from '~/pages/Search';
-import Live from '~/pages/Live';
+import Shop from '~/pages/Shop';
 import Login from '~/pages/Login';
+import Cart from '~/pages/Cart';
+import Checkout from '~/pages/Checkout';
+import Thankyou from '~/pages/Thankyou';
+import Register from '~/pages/Register';
 
 // Public routes
 export const publicRoutes = [
     { path: config.routes.home, component: Home },
-    { path: config.routes.following, component: Following },
-    { path: config.routes.live, component: Live },
-    { path: config.routes.profile, component: Profile },
-    { path: config.routes.upload, component: Upload, layout: HeaderOnly },
-    { path: config.routes.search, component: Search, layout: null },
+    { path: config.routes.shop, component: Shop, component: Shop },
+    { path: config.routes.cart, component: Cart, component: Cart },
+    { path: config.routes.checkout, component: Checkout, component: Checkout },
+    { path: config.routes.thankyou, component: Thankyou, component: Thankyou },
+    { path: config.routes.register, component: Register, layout: null },
     { path: config.routes.login, component: Login, layout: null },
 ];
 
