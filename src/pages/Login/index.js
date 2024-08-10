@@ -1,6 +1,38 @@
 import React, { useState } from 'react';
-
+import axios from 'axios';
+import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
+import { useContext } from 'react';
+import { UserContext } from '~/context/UserContext ';
+import 'react-toastify/dist/ReactToastify.css';
 function Login() {
+    const { loginContext } = useContext(UserContext);
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+    const [loadingAPI, setLoadingAPI] = useState(false);
+    const navigate = useNavigate();
+
+    const handleLogin = async (e) => {
+        setLoadingAPI(true);
+        e.preventDefault();
+        try {
+            const response = await axios.post('http://localhost:8081/api/v1/auth/login', {
+                username,
+                password,
+            });
+            loginContext(username, response.data.token);
+            localStorage.setItem('token', response.data.token);
+            console.log('Login successful!', response.data.token);
+            navigate('/');
+            toast.success('Login successful!');
+            localStorage.setItem('token', response.data.token);
+        } catch (error) {
+            toast.error('UserName or PassWord wrong!');
+            // console.error('Login error:', error);
+        }
+        setLoadingAPI(false);
+    };
+
     return (
         <>
             <>
@@ -69,18 +101,17 @@ function Login() {
                                                 </div>
                                             </div>
                                             <h5 className="or mb-24">or</h5>
-                                            <form
-                                                action="https://uiparadox.co.uk/public/templates/gamerx/v2/login.html"
-                                                className="form-validator"
-                                            >
+                                            <form onSubmit={handleLogin} className="form-validator">
                                                 <div className="mb-30">
                                                     <input
-                                                        type="email"
+                                                        type="text"
                                                         className="form-control"
                                                         id="login-email"
-                                                        name="login-email"
+                                                        name="username"
                                                         required=""
-                                                        placeholder="Email"
+                                                        placeholder="User Name"
+                                                        value={username}
+                                                        onChange={(e) => setUsername(e.target.value)}
                                                     />
                                                 </div>
                                                 <div className="mb-30">
@@ -91,10 +122,13 @@ function Login() {
                                                         name="login-password"
                                                         required=""
                                                         placeholder="Password"
+                                                        value={password}
+                                                        onChange={(e) => setPassword(e.target.value)}
                                                     />
                                                 </div>
                                                 <button type="submit" className="b-unstyle cus-btn primary w-100 mb-24">
-                                                    Login
+                                                    {loadingAPI && <i className="fa-solid fa-sync fa-spin"></i>}
+                                                    &nbsp; Login
                                                 </button>
                                             </form>
                                             <div className="bottom-row">

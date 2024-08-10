@@ -8,7 +8,7 @@ const UserProvider = ({ children }) => {
         const storedUsername = localStorage.getItem('username');
         return {
             username: storedUsername || '',
-            auth: !!storedToken, // Chuyển đổi thành boolean từ dữ liệu lưu trữ token
+            auth: !!storedToken,
         };
     });
 
@@ -28,7 +28,7 @@ const UserProvider = ({ children }) => {
             username: '',
             auth: false,
         });
-        window.location.reload();
+        // window.location.reload();
     };
 
     return <UserContext.Provider value={{ user, loginContext, logout }}>{children}</UserContext.Provider>;

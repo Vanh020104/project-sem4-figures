@@ -1,17 +1,43 @@
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import React, { useState, useEffect, useContext } from 'react';
+import { UserContext } from '~/context/UserContext ';
+import axios from 'axios';
+import logo from '~/assets/media/logo.png';
 function Header() {
+    const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('token'));
+    const { logout, user } = useContext(UserContext);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            setIsLoggedIn(true);
+        } else {
+            setIsLoggedIn(false);
+        }
+    }, []);
+
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        logout(); // Assuming this clears the context and user data
+        setIsLoggedIn(false);
+        navigate('/');
+        toast.success('Logout success!');
+    };
+
     return (
         <>
-            {/* Header Area Start */}
             <header className="large-screens">
                 <div className="container">
                     <nav className="navbar navbar-expand-lg">
                         <div className="collapse navbar-collapse justify-content-between">
                             <a className="navbar-brand" href="/">
-                                <img alt="logo" src="assets/media/logo.png" />
+                                <img alt="logo" src={logo} />
                             </a>
                             <ul className="navbar-nav mainmenu">
                                 <li className="menu-item has-children">
-                                    <a href="javascript:void(0);" className="main-menu-item active">
+                                    <a className="main-menu-item active">
                                         Home
                                         <i className="fas fa-caret-down m-1" />
                                     </a>
@@ -23,31 +49,8 @@ function Header() {
                                         </li>
                                     </ul>
                                 </li>
-                                {/* <li className="menu-item has-children">
-                                    <a href="javascript:void(0);" className="main-menu-item">
-                                        Games
-                                        <i className="fas fa-caret-down m-1" />
-                                    </a>
-                                    <ul className="submenu">
-                                        <li>
-                                            <a href="live-streams.html">Live Streams</a>
-                                        </li>
-                                        <li>
-                                            <a href="stream-detail.html">Stream Detail</a>
-                                        </li>
-                                        <li>
-                                            <a href="match-result.html">Match Results</a>
-                                        </li>
-                                        <li>
-                                            <a href="tournament-list.html">Tournaments</a>
-                                        </li>
-                                        <li>
-                                            <a href="tournment-detail.html">Tournament Detail</a>
-                                        </li>
-                                    </ul>
-                                </li> */}
                                 <li className="menu-item has-children">
-                                    <a href="javascript:void(0);" className="main-menu-item">
+                                    <a className="main-menu-item">
                                         Shop
                                         <i className="fas fa-caret-down m-1" />
                                     </a>
@@ -61,8 +64,8 @@ function Header() {
                                     </ul>
                                 </li>
                                 <li className="menu-item has-children">
-                                    <a href="javascript:void(0);" className="main-menu-item">
-                                        pages
+                                    <a className="main-menu-item">
+                                        Pages
                                         <i className="fas fa-caret-down m-1" />
                                     </a>
                                     <ul className="submenu">
@@ -80,7 +83,7 @@ function Header() {
                                     </ul>
                                 </li>
                                 <li className="menu-item has-children">
-                                    <a href="javascript:void(0);" className="main-menu-item">
+                                    <a className="main-menu-item">
                                         Account
                                         <i className="fas fa-caret-down m-1" />
                                     </a>
@@ -88,12 +91,17 @@ function Header() {
                                         <li>
                                             <a href="/myorder">My Order</a>
                                         </li>
-                                        <li>
-                                            <a href="/login">Login</a>
-                                        </li>
-                                        <li>
-                                            <a href="#">Logout</a>
-                                        </li>
+                                        {isLoggedIn ? (
+                                            <li>
+                                                <a href="#" onClick={handleLogout}>
+                                                    Logout
+                                                </a>
+                                            </li>
+                                        ) : (
+                                            <li>
+                                                <a href="/login">Login</a>
+                                            </li>
+                                        )}
                                     </ul>
                                 </li>
                             </ul>
@@ -121,11 +129,36 @@ function Header() {
                                         <i className="fal fa-shopping-cart" />
                                     </a>
                                 </li>
-                                <li className="icon">
-                                    <a href="/login">
-                                        <i className="fal fa-user" />
-                                    </a>
-                                </li>
+
+                                <ul className="navbar-nav mainmenu">
+                                    <li className="menu-item has-children">
+                                        {isLoggedIn ? (
+                                            <>
+                                                <a className="main-menu-item">
+                                                    <i className="fal fa-user" />
+                                                    <i className="fas fa-caret-down m-1" />
+                                                </a>
+                                                <ul className="submenu">
+                                                    <li>
+                                                        <a href="#" className="active">
+                                                            {/* {username}  */}
+                                                            vanmh
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="#" onClick={handleLogout}>
+                                                            Logout
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </>
+                                        ) : (
+                                            <a href="/login" className="main-menu-item">
+                                                Login
+                                            </a>
+                                        )}
+                                    </li>
+                                </ul>
                             </ul>
                         </div>
                     </nav>

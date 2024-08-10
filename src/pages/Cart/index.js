@@ -67,25 +67,11 @@ function Cart() {
                                                     <td>
                                                         <div className="quantity quantity-wrap">
                                                             <input
-                                                                style={{ fontSize: 18 }}
-                                                                className="decrement"
-                                                                type="button"
-                                                                defaultValue="-"
-                                                            />
-                                                            <input
-                                                                style={{ fontSize: 18 }}
-                                                                type="text"
+                                                                style={{ width: 90, height: 40 }}
+                                                                type="number"
                                                                 name="quantity"
-                                                                defaultValue={2}
-                                                                maxLength={2}
-                                                                size={1}
+                                                                defaultValue={1}
                                                                 className="number"
-                                                            />
-                                                            <input
-                                                                style={{ fontSize: 18 }}
-                                                                className="increment"
-                                                                type="button"
-                                                                defaultValue="+"
                                                             />
                                                         </div>
                                                     </td>

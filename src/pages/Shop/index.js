@@ -1,4 +1,31 @@
+import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+
 function Shop() {
+    const [products, setProducts] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        // Gọi API khi component được mount
+        fetch('http://localhost:8082/api/v1/products')
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then((data) => {
+                setProducts(data.content);
+                setLoading(false);
+            })
+            .catch((error) => {
+                setLoading(false);
+            });
+    }, []);
+
+    if (loading) {
+        return <div>Loading...</div>;
+    }
     return (
         <>
             <>
@@ -240,89 +267,91 @@ function Shop() {
                                         }}
                                     >
                                         <div className="row">
-                                            <div className="col-xxl-4 col-sm-4" style={{ padding: 5 }}>
-                                                <div
-                                                    className="product-card mb-30"
-                                                    style={{
-                                                        padding: 15,
-                                                        borderRadius: 10,
-                                                        textAlign: 'center',
-                                                    }}
-                                                >
+                                            {products.map((product, index) => (
+                                                <div key={index} className="col-xxl-4 col-sm-4" style={{ padding: 5 }}>
                                                     <div
-                                                        className="top-row"
+                                                        className="product-card mb-30"
                                                         style={{
-                                                            display: 'flex',
-                                                            justifyContent: 'space-between',
-                                                            alignItems: 'center',
+                                                            padding: 15,
+                                                            borderRadius: 10,
+                                                            textAlign: 'center',
                                                         }}
                                                     >
-                                                        <h6
-                                                            className="tag"
+                                                        <div
+                                                            className="top-row"
                                                             style={{
-                                                                fontSize: 16,
-                                                                padding: '2px 8px',
-                                                                borderRadius: 5,
+                                                                display: 'flex',
+                                                                justifyContent: 'space-between',
+                                                                alignItems: 'center',
                                                             }}
                                                         >
-                                                            SALE
-                                                        </h6>
-                                                        <div className="wishlist-icon">
-                                                            <i
-                                                                className="fal fa-heart"
-                                                                style={{ color: '#fff', fontSize: 20 }}
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                    <h5 className="mb-12" style={{ color: '#fff' }}>
-                                                        <a
-                                                            href="product-detail.html"
-                                                            style={{
-                                                                color: 'inherit',
-                                                                textDecoration: 'none',
-                                                                fontSize: 19,
-                                                            }}
-                                                        >
-                                                            Gamepad Game Controller
-                                                        </a>
-                                                    </h5>
-                                                    <img
-                                                        src="assets/media/products/p-1.png"
-                                                        alt=""
-                                                        style={{ width: 220 }}
-                                                    />
-                                                    <div className="bottom-row">
-                                                        <div className="price">
-                                                            <h4
+                                                            <h6
+                                                                className="tag"
                                                                 style={{
-                                                                    color: 'white',
-                                                                    margin: '10px 0',
-                                                                    fontSize: 20,
+                                                                    fontSize: 16,
+                                                                    padding: '2px 8px',
+                                                                    borderRadius: 5,
                                                                 }}
                                                             >
-                                                                $20.00
-                                                            </h4>
+                                                                SALE
+                                                            </h6>
+                                                            <div className="wishlist-icon">
+                                                                <i
+                                                                    className="fal fa-heart"
+                                                                    style={{ color: '#fff', fontSize: 20 }}
+                                                                />
+                                                            </div>
                                                         </div>
-                                                        <a
-                                                            href="cart.html"
-                                                            className="cus-btn primary"
-                                                            style={{
-                                                                padding: 10,
-                                                                borderRadius: 5,
-                                                                textDecoration: 'none',
-                                                                display: 'inline-block',
-                                                                marginTop: 10,
-                                                            }}
-                                                        >
-                                                            Add to cart
-                                                            <i
-                                                                className="fal fa-shopping-cart"
-                                                                style={{ marginLeft: 5 }}
-                                                            />
-                                                        </a>
+                                                        <h5 className="mb-12" style={{ color: '#fff' }}>
+                                                            <Link
+                                                                to={`/productdetails/${product.productId}`}
+                                                                style={{
+                                                                    textDecoration: 'none',
+                                                                    fontSize: 19,
+                                                                }}
+                                                            >
+                                                                {product.name}
+                                                            </Link>
+                                                        </h5>
+                                                        <img
+                                                            src="assets/media/products/p-1.png"
+                                                            // src={product.images.imageUrl}
+                                                            alt=""
+                                                            style={{ width: 220 }}
+                                                        />
+                                                        <div className="bottom-row">
+                                                            <div className="price">
+                                                                <h4
+                                                                    style={{
+                                                                        color: 'white',
+                                                                        margin: '10px 0',
+                                                                        fontSize: 20,
+                                                                    }}
+                                                                >
+                                                                    ${product.price}
+                                                                </h4>
+                                                            </div>
+                                                            <a
+                                                                href="cart.html"
+                                                                className="cus-btn primary"
+                                                                style={{
+                                                                    padding: 10,
+                                                                    borderRadius: 5,
+                                                                    textDecoration: 'none',
+                                                                    display: 'inline-block',
+                                                                    marginTop: 10,
+                                                                }}
+                                                            >
+                                                                Add to cart
+                                                                <i
+                                                                    className="fal fa-shopping-cart"
+                                                                    style={{ marginLeft: 5 }}
+                                                                />
+                                                            </a>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
+                                            ))}
                                         </div>
 
                                         {/* end products */}

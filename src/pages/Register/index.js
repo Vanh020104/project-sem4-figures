@@ -1,4 +1,70 @@
+import React, { useState } from 'react';
+import { toast } from 'react-toastify';
+import axios from 'axios';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 function Register() {
+    const url = 'http://localhost:8081/api/v1/auth/register';
+    const [data, setData] = useState({
+        username: '',
+        email: '',
+        password: '',
+    });
+    const [errors, setErrors] = useState({});
+
+    function validate(data) {
+        let errors = {};
+        if (!data.username.trim()) {
+            errors.username = 'username is required';
+            toast.error('username is required');
+        }
+        if (!data.email.trim()) {
+            errors.email = 'Email is required';
+            toast.error('Email is required');
+        } else if (!/\S+@\S+\.\S+/.test(data.email)) {
+            errors.email = 'Email address is invalid';
+            toast.error('Email address is invalid');
+        }
+        if (!data.password) {
+            errors.password = 'Password is required';
+            toast.error('Password is required');
+        } else if (data.password.length < 6) {
+            errors.password = 'Password must be at least 6 characters long';
+            toast.error('Password must be at least 6 characters long');
+        }
+        return errors;
+    }
+
+    function submit(e) {
+        e.preventDefault();
+        const validationErrors = validate(data);
+        if (Object.keys(validationErrors).length === 0) {
+            axios
+                .post(url, {
+                    username: data.username,
+                    email: data.email,
+                    password: data.password,
+                })
+                .then((res) => {
+                    console.log(res.data);
+                    window.location.href = '/login';
+                    toast.success('Sign up successful!');
+                })
+                .catch((error) => {
+                    console.error('Registration error: ', error.response.data);
+                    toast.error('An error occurred during sign up. Please try again.');
+                });
+        } else {
+            setErrors(validationErrors);
+            toast.error('Please fill in the required fields correctly.');
+        }
+    }
+
+    function handle(e) {
+        const newData = { ...data };
+        newData[e.target.id] = e.target.value;
+        setData(newData);
+    }
     return (
         <>
             <div id="preloader">
@@ -41,6 +107,7 @@ function Register() {
                         </div>
                     </div>
                 </header>
+                <ToastContainer />
                 {/* Header Area end */}
                 {/* 404 Area Start  */}
                 <div className="login-page">
@@ -65,33 +132,27 @@ function Register() {
                                         </div>
                                         <h5 className="or mb-8">or</h5>
                                         <h6 className="mb-24">Sign up with your email address</h6>
-                                        <form
-                                            action="https://uiparadox.co.uk/public/templates/gamerx/v2/signup.html"
-                                            className="form-validator"
-                                        >
-                                            <div className="row">
-                                                <div className="col-sm-6">
+                                        <form onSubmit={submit} className="form-validator">
+                                            <div className="">
+                                                <div className="">
                                                     <div className="mb-30">
                                                         <input
                                                             type="text"
                                                             className="form-control"
-                                                            id="first-name"
-                                                            name="first-name"
+                                                            id="username"
                                                             required=""
-                                                            placeholder="First Name"
+                                                            onChange={(e) => handle(e)}
+                                                            value={data.username}
+                                                            placeholder="Full Name"
                                                         />
-                                                    </div>
-                                                </div>
-                                                <div className="col-sm-6">
-                                                    <div className="mb-30">
-                                                        <input
-                                                            type="text"
-                                                            className="form-control"
-                                                            id="last-name"
-                                                            name="last-name"
-                                                            required=""
-                                                            placeholder="Last Name"
-                                                        />
+                                                        {/* {errors.username && (
+                                                            <p
+                                                                style={{ marginTop: 5, color: 'red' }}
+                                                                className="error-message"
+                                                            >
+                                                                {errors.username}
+                                                            </p>
+                                                        )} */}
                                                     </div>
                                                 </div>
                                             </div>
@@ -99,21 +160,33 @@ function Register() {
                                                 <input
                                                     type="email"
                                                     className="form-control"
-                                                    id="login-email"
-                                                    name="login-email"
+                                                    id="email"
                                                     required=""
+                                                    onChange={(e) => handle(e)}
+                                                    value={data.email}
                                                     placeholder="Email"
                                                 />
+                                                {/* {errors.email && (
+                                                    <p style={{ marginTop: 5, color: 'red' }} className="error-message">
+                                                        {errors.email}
+                                                    </p>
+                                                )} */}
                                             </div>
                                             <div className="mb-30">
                                                 <input
                                                     type="password"
                                                     className="form-control"
-                                                    id="login-password"
-                                                    name="login-password"
+                                                    id="password"
                                                     required=""
+                                                    onChange={(e) => handle(e)}
+                                                    value={data.password}
                                                     placeholder="Password"
                                                 />
+                                                {/* {errors.password && (
+                                                    <p style={{ marginTop: 5, color: 'red' }} className="error-message">
+                                                        {errors.password}
+                                                    </p>
+                                                )} */}
                                             </div>
                                             <button type="submit" className="b-unstyle cus-btn primary w-100 mb-24">
                                                 Create Account
