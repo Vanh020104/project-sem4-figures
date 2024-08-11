@@ -20,12 +20,15 @@ function Login() {
                 username,
                 password,
             });
-            loginContext(username, response.data.token);
-            localStorage.setItem('token', response.data.token);
-            console.log('Login successful!', response.data.token);
+            loginContext(username, response.data.accessToken);
+            localStorage.setItem('accessToken', response.data.accessToken);
+            const userId = response.data.id;
+            localStorage.setItem('userId', userId);
+            console.log(userId);
+            // console.log('Login successful!', response.data.accessToken);
             navigate('/');
             toast.success('Login successful!');
-            localStorage.setItem('token', response.data.token);
+            localStorage.setItem('accessToken', response.data.accessToken);
         } catch (error) {
             toast.error('UserName or PassWord wrong!');
             // console.error('Login error:', error);

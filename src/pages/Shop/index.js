@@ -375,7 +375,7 @@ function Shop() {
                                                         textDecoration: 'none',
                                                     }}
                                                 >
-                                                    <i className="far fa-chevron-left" style={{ fontSize: 18 }} />
+                                                    <i className="fas fa-chevron-left" style={{ fontSize: 25 }} />
                                                 </a>
                                             </li>
                                             <li className="page-item">
@@ -443,7 +443,7 @@ function Shop() {
                                                         textDecoration: 'none',
                                                     }}
                                                 >
-                                                    <i className="far fa-chevron-right" style={{ fontSize: 18 }} />
+                                                    <i className="fas fa-chevron-right" style={{ fontSize: 25 }} />
                                                 </a>
                                             </li>
                                         </ul>

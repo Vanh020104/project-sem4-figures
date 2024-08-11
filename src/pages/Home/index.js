@@ -16,13 +16,13 @@ function Login() {
                                 illo ipsum rem odio velit. Aspernatur.
                             </h6>
                             <div className="btn-block">
-                                <a href="signup.html" className="cus-btn primary">
+                                <a href="#" className="cus-btn primary">
                                     Join Now
                                     <i className="fas fa-chevron-right" />
                                 </a>
-                                <a href="blogs.html" className="cus-btn sec">
+                                <a href="#" className="cus-btn sec">
                                     Read More
-                                    <i className="far fa-book-open" />
+                                    <i class="fa-solid fa-pen-to-square"></i>
                                 </a>
                             </div>
                         </div>

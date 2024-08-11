@@ -2,26 +2,38 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import React, { useState, useEffect, useContext } from 'react';
 import { UserContext } from '~/context/UserContext ';
-import axios from 'axios';
+// import { jwtDecode } from 'jwt-decode';
+import jwtDecode from 'jwt-decode';
 import logo from '~/assets/media/logo.png';
+
 function Header() {
-    const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('token'));
-    const { logout, user } = useContext(UserContext);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [username, setUsername] = useState('');
+    const { logout } = useContext(UserContext);
     const navigate = useNavigate();
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('accessToken');
         if (token) {
-            setIsLoggedIn(true);
+            try {
+                const decodedToken = jwtDecode(token);
+                // console.log('Decoded Token:', decodedToken); // Debugging
+                setUsername(decodedToken.sub); // Sử dụng 'sub' để lấy username
+                setIsLoggedIn(true);
+            } catch (error) {
+                console.error('Invalid token', error);
+                setIsLoggedIn(false);
+            }
         } else {
             setIsLoggedIn(false);
         }
     }, []);
 
     const handleLogout = () => {
-        localStorage.removeItem('token');
-        logout(); // Assuming this clears the context and user data
+        localStorage.removeItem('accessToken');
+        logout(); // Xóa dữ liệu người dùng trong context
         setIsLoggedIn(false);
+        setUsername(''); // Xóa tên người dùng khi đăng xuất
         navigate('/');
         toast.success('Logout success!');
     };
@@ -130,7 +142,7 @@ function Header() {
                                     </a>
                                 </li>
 
-                                <ul className="navbar-nav mainmenu">
+                                <ul className="navbar-nav mainmenu" style={{ padding: 0 }}>
                                     <li className="menu-item has-children">
                                         {isLoggedIn ? (
                                             <>
@@ -141,8 +153,7 @@ function Header() {
                                                 <ul className="submenu">
                                                     <li>
                                                         <a href="#" className="active">
-                                                            {/* {username}  */}
-                                                            vanmh
+                                                            {username}
                                                         </a>
                                                     </li>
                                                     <li>

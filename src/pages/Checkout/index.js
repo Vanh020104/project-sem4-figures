@@ -1,4 +1,47 @@
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 function Checkout() {
+    const [cartItems, setCartItems] = useState([]);
+    const [totalCost, setTotalCost] = useState(0);
+
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            const userId = localStorage.getItem('userId');
+
+            // Fetch the order details
+            axios
+                .get(`http://localhost:8084/api/v1/orders/user/${userId}`)
+                .then((response) => {
+                    const order = response.data;
+                    setTotalCost(order.totalPrice);
+
+                    // For each orderDetail, fetch the corresponding product details
+                    const productRequests = order.orderDetails.map((item) =>
+                        axios
+                            .get(`http://localhost:8082/api/v1/products/${item.id.productId}`)
+                            .then((productResponse) => ({
+                                ...item,
+                                product: productResponse.data,
+                            })),
+                    );
+
+                    // Wait for all product requests to complete
+                    Promise.all(productRequests)
+                        .then((fullCartItems) => {
+                            setCartItems(fullCartItems);
+                            const total = fullCartItems.reduce((acc, item) => acc + item.quantity * item.unitPrice, 0);
+                            setTotalCost(total);
+                        })
+                        .catch((error) => {
+                            console.error('Error fetching product details:', error);
+                        });
+                })
+                .catch((error) => {
+                    console.error('Error fetching the cart data:', error);
+                });
+        }
+    }, []);
     return (
         <>
             <>
@@ -31,7 +74,7 @@ function Checkout() {
                             <div className="container">
                                 <div className="row">
                                     <div className="col-xl-8 mb-64 mb-xl-0">
-                                        <form action="https://uiparadox.co.uk/public/templates/gamerx/v2/checkout.html">
+                                        <form>
                                             <div className="mb-64">
                                                 <h5 className="mb-32">Customer Info</h5>
                                                 <div className="row mb-32">
@@ -224,20 +267,26 @@ function Checkout() {
                                             </div>
                                             <div className="block mb-32">
                                                 <div className="block-row mb-32">
-                                                    <h6>3 ITEMS</h6>
-                                                    <h6 className="light-gray">$120.00</h6>
+                                                    <h6>{cartItems.length} ITEMS</h6>
+                                                    <h6 className="light-gray">${totalCost}</h6>
                                                 </div>
                                                 <ul className="unstyled ordered-products mb-32">
-                                                    <li className="mb-16">
-                                                        <div className="p-detail">
-                                                            <img src="assets/media/products/ps-1.png" alt="" />
-                                                            <div>
-                                                                <h6>Gaming Headphone</h6>
-                                                                <h6 className="medium-gray">Quantity: 1</h6>
+                                                    {cartItems.map((item, index) => (
+                                                        <li className="mb-16">
+                                                            <div className="p-detail">
+                                                                <img src="assets/media/products/ps-1.png" alt="" />
+                                                                <div>
+                                                                    <h6>{item.product.name}</h6>
+                                                                    <h6 className="medium-gray">
+                                                                        Quantity:{item.quantity}
+                                                                    </h6>
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                        <h6 className="light-gray">$20.00</h6>
-                                                    </li>
+                                                            <h6 className="light-gray">
+                                                                ${item.quantity * item.unitPrice}
+                                                            </h6>
+                                                        </li>
+                                                    ))}
                                                 </ul>
                                             </div>
                                             <div className="block mb-32">
@@ -262,7 +311,7 @@ function Checkout() {
                                             <div className="block mb-32">
                                                 <div className="block-row mb-24">
                                                     <h6>SUBTOTAL</h6>
-                                                    <h6 className="light-gray">$120.00</h6>
+                                                    <h6 className="light-gray">${totalCost}</h6>
                                                 </div>
                                                 <div className="block-row mb-32">
                                                     <h6>PROMO CODE</h6>
@@ -271,7 +320,7 @@ function Checkout() {
                                             </div>
                                             <div className="block-row mb-32">
                                                 <h5>TOTAL COST</h5>
-                                                <h5 className="color-primary">$115.00</h5>
+                                                <h5 className="color-primary">${totalCost}</h5>
                                             </div>
                                             <a href="/thankyou" className="cus-btn primary w-100">
                                                 Place Order

@@ -4,13 +4,16 @@ import axios from 'axios';
 import image1 from '~/assets/media/products/p-1.png';
 import image2 from '~/assets/media/products/p-2.png';
 import image3 from '~/assets/media/products/p-3.png';
+import { toast } from 'react-toastify';
 
 function ProductDetails() {
     const { id } = useParams(); // Get the productId from the URL
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-
+    const [quantity, setQuantity] = useState(1);
+    const orderId = Math.floor(Math.random() * 1000000).toString();
+    const userId = localStorage.getItem('userId');
     useEffect(() => {
         const fetchProduct = async () => {
             try {
@@ -24,6 +27,32 @@ function ProductDetails() {
         };
         fetchProduct();
     }, [id]);
+    const handleQuantityChange = (e) => {
+        setQuantity(Number(e.target.value)); // Chuyển đổi giá trị input thành số
+    };
+
+    const handleAddToCart = async () => {
+        try {
+            const response = await axios.post('http://localhost:8084/api/v1/orders', {
+                userId: userId,
+                status: '0',
+                orderDetails: [
+                    {
+                        id: {
+                            orderId: orderId,
+                            productId: product.productId,
+                        },
+                        quantity: quantity, // Đảm bảo rằng giá trị quantity chính xác
+                    },
+                ],
+            });
+            // console.log('Phản hồi từ API:', response.data);
+            toast.success('The product has been added to the cart!');
+        } catch (error) {
+            console.error('error:', error.response?.data || error.message);
+            toast.error('Failed to add the product to the cart!');
+        }
+    };
 
     if (loading) return <div>Loading...</div>;
     if (error) return <div>{error}</div>;
@@ -112,12 +141,14 @@ function ProductDetails() {
                                                     name="quantity"
                                                     defaultValue={1}
                                                     className="number"
+                                                    value={quantity} // Sử dụng giá trị từ trạng thái
+                                                    onChange={handleQuantityChange}
                                                 />
                                             </div>
-                                            <a href="cart.html" className="cus-btn primary">
+                                            <button onClick={handleAddToCart} className="cus-btn primary">
                                                 Add to Cart <i className="fal fa-shopping-cart" />
-                                            </a>
-                                            <a href="cart.html" className="cus-btn primary">
+                                            </button>
+                                            <a href="#" className="cus-btn primary">
                                                 Buy it Now
                                             </a>
                                         </div>
