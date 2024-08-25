@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { publicRoutes } from '~/routes';
 import DefaultLayout from '~/layouts';
 import { ToastContainer } from 'react-toastify';
-
+import KommunicateChat from './chat';
 function App() {
     return (
         <Router>
@@ -33,6 +33,7 @@ function App() {
                         );
                     })}
                 </Routes>
+                <KommunicateChat />
             </div>
             <ToastContainer
                 position="top-right"

@@ -14,7 +14,7 @@ function Register() {
 
     function validate(data) {
         let errors = {};
-        if (!data.username.trim()) {
+        if (!data.username.trim() || 20 > data.username.length > 3) {
             errors.username = 'username is required';
             toast.error('username is required');
         }

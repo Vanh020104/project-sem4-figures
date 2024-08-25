@@ -1,77 +1,150 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { toast } from 'react-toastify';
+import cod from '../../assets/media/icons/cod.png';
+import VNPAY from '../../assets/media/icons/vnpay.png';
 function Checkout() {
     const [cartItems, setCartItems] = useState([]);
     const [totalCost, setTotalCost] = useState(0);
+    const [isLoggedIn, setIsLoggedIn] = useState(true);
+    const [formData, setFormData] = useState({
+        firstName: '',
+        lastName: '',
+        address: '',
+        phone: '',
+        country: '',
+        postalCode: '',
+        note: '',
+        email: '',
+        payment_method: '',
+    });
 
     useEffect(() => {
         const token = localStorage.getItem('token');
-        if (token) {
-            const userId = localStorage.getItem('userId');
-
-            // Fetch the order details
-            axios
-                .get(`http://localhost:8084/api/v1/orders/user/${userId}`)
-                .then((response) => {
-                    const order = response.data;
-                    setTotalCost(order.totalPrice);
-
-                    // For each orderDetail, fetch the corresponding product details
-                    const productRequests = order.orderDetails.map((item) =>
-                        axios
-                            .get(`http://localhost:8082/api/v1/products/${item.id.productId}`)
-                            .then((productResponse) => ({
-                                ...item,
-                                product: productResponse.data,
-                            })),
-                    );
-
-                    // Wait for all product requests to complete
-                    Promise.all(productRequests)
-                        .then((fullCartItems) => {
-                            setCartItems(fullCartItems);
-                            const total = fullCartItems.reduce((acc, item) => acc + item.quantity * item.unitPrice, 0);
-                            setTotalCost(total);
-                        })
-                        .catch((error) => {
-                            console.error('Error fetching product details:', error);
-                        });
-                })
-                .catch((error) => {
-                    console.error('Error fetching the cart data:', error);
-                });
+        if (!token) {
+            setIsLoggedIn(false);
+            return;
         }
+
+        const userId = localStorage.getItem('userId');
+
+        axios
+            .get(`http://localhost:8081/api/v1/cart/user/${userId}`)
+            .then((response) => {
+                const cartData = response.data.data;
+                setCartItems(cartData);
+                const total = cartData.reduce((acc, item) => acc + item.quantity * item.productPrice, 0);
+                setTotalCost(total);
+            })
+            .catch((error) => {
+                console.error('Error fetching the cart data:', error);
+            });
     }, []);
+
+    const handleChange = (e) => {
+        const { id, value } = e.target;
+        setFormData({ ...formData, [id]: value });
+    };
+
+    const handlePaymentMethodChange = (e) => {
+        setFormData({ ...formData, payment_method: e.target.value });
+    };
+
+    const handleSubmit = () => {
+        const { firstName, lastName, address, phone, country, postalCode, email, payment_method } = formData;
+
+        if (!firstName || !lastName || !address || !phone || !country || !postalCode || !email || !payment_method) {
+            toast.error('Please enter complete information and select a payment method!');
+            return;
+        }
+
+        const userId = localStorage.getItem('userId');
+        const orderData = {
+            userId,
+            ...formData,
+            totalPrice: totalCost,
+            cartItems: cartItems.map((item) => ({
+                userId: userId,
+                productId: item.id.productId,
+                quantity: item.quantity,
+                unitPrice: item.productPrice,
+                productImage: `http://localhost:8082/api/v1/product-images/images/${item.productImages[0]}`,
+                productName: item.productName,
+            })),
+        };
+
+        fetch('http://localhost:8084/api/v1/orders', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(orderData),
+        })
+            .then((response) => {
+                if (!response.ok) {
+                    return response.json().then((errorData) => {
+                        throw new Error(errorData.message || 'Order failed!');
+                    });
+                }
+                return response.json();
+            })
+            .then((data) => {
+                toast.success('Order successful!');
+                localStorage.setItem('orderData', JSON.stringify(orderData));
+                console.log('Success:', orderData);
+                if (data.data) {
+                    window.location.href = data.data;
+                    // console.log('Success:', data.data);
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                toast.error(error.message || 'Order failed!');
+            });
+    };
+
     return (
         <>
-            <>
-                <a href="#main-wrapper" id="backto-top" className="back-to-top">
-                    <i className="fas fa-angle-up" />
-                </a>
-                {/* Main Wrapper Start */}
-                <div id="main-wrapper" className="main-wrapper overflow-hidden">
-                    {/* Page Start Banner Area Start */}
-                    <div className="page-title-banner p-64">
-                        <div className="container">
-                            <div className="content">
-                                <a className="mb-16 cus-btn dark" href="/">
-                                    <i className="fas fa-chevron-left" />
-                                    Back to Home
-                                </a>
-                                <h2 className="mb-16">Checkout</h2>
-                                <p style={{ color: 'white' }}>
-                                    Lorem ipsum dolor sit amet consectetur. Adipiscing elementum <br /> condimentum
-                                    tellus quis eros ridiculus quisque. Viverra non etiam in.
-                                </p>
-                            </div>
+            <a href="#main-wrapper" id="backto-top" className="back-to-top">
+                <i className="fas fa-angle-up" />
+            </a>
+            <div id="main-wrapper" className="main-wrapper overflow-hidden">
+                <div className="page-title-banner p-64">
+                    <div className="container">
+                        <div className="content">
+                            <a className="mb-16 cus-btn dark" href="/">
+                                <i className="fas fa-chevron-left" />
+                                Back to Home
+                            </a>
+                            <h2 className="mb-16">Checkout</h2>
+                            <p style={{ color: 'white' }}>
+                                Lorem ipsum dolor sit amet consectetur. Adipiscing elementum <br /> condimentum tellus
+                                quis eros ridiculus quisque. Viverra non etiam in.
+                            </p>
                         </div>
                     </div>
-                    {/* Page Start Banner Area End */}
-                    {/* Main Content Start */}
-                    <div className="page-content">
-                        {/* Checkout Area Start */}
-                        <section style={{ marginBottom: 100 }} className="checkout p-40">
-                            <div className="container">
+                </div>
+                <div className="page-content">
+                    <section style={{ marginBottom: 100 }} className="checkout p-40">
+                        <div className="container">
+                            {!isLoggedIn ? (
+                                <p
+                                    style={{
+                                        textAlign: 'center',
+                                        fontSize: '20px',
+                                        display: 'flex',
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                        color: 'white',
+                                        backgroundColor: '#3cbc1c',
+                                        width: 500,
+                                        margin: '0 auto',
+                                        padding: 20,
+                                    }}
+                                >
+                                    Please login to checkout!
+                                </p>
+                            ) : (
                                 <div className="row">
                                     <div className="col-xl-8 mb-64 mb-xl-0">
                                         <form>
@@ -83,9 +156,11 @@ function Checkout() {
                                                             <input
                                                                 type="text"
                                                                 className="form-control"
-                                                                id="first-name"
-                                                                name="first-name"
-                                                                required=""
+                                                                id="firstName"
+                                                                name="firstName"
+                                                                value={formData.firstName}
+                                                                onChange={handleChange}
+                                                                required
                                                                 placeholder="First Name"
                                                             />
                                                         </div>
@@ -94,11 +169,13 @@ function Checkout() {
                                                         <div className="mb-24">
                                                             <input
                                                                 type="text"
-                                                                className="form-control"
-                                                                id="last-name"
-                                                                name="last-name"
-                                                                required=""
+                                                                id="lastName"
+                                                                name="lastName"
+                                                                value={formData.lastName}
+                                                                onChange={handleChange}
+                                                                required
                                                                 placeholder="Last Name"
+                                                                className="form-control"
                                                             />
                                                         </div>
                                                     </div>
@@ -109,8 +186,10 @@ function Checkout() {
                                                                 className="form-control"
                                                                 id="email"
                                                                 name="email"
-                                                                required=""
-                                                                placeholder=" Your Email"
+                                                                value={formData.email}
+                                                                onChange={handleChange}
+                                                                required
+                                                                placeholder="Your Email"
                                                             />
                                                         </div>
                                                     </div>
@@ -119,9 +198,11 @@ function Checkout() {
                                                             <input
                                                                 type="text"
                                                                 className="form-control"
-                                                                id="phne-number"
-                                                                name="phne-number"
-                                                                required=""
+                                                                id="phone"
+                                                                name="phone"
+                                                                value={formData.phone}
+                                                                onChange={handleChange}
+                                                                required
                                                                 placeholder="Phone Number"
                                                             />
                                                         </div>
@@ -136,7 +217,9 @@ function Checkout() {
                                                                 className="form-control"
                                                                 id="country"
                                                                 name="country"
-                                                                required=""
+                                                                value={formData.country}
+                                                                onChange={handleChange}
+                                                                required
                                                                 placeholder="Country"
                                                             />
                                                         </div>
@@ -145,47 +228,40 @@ function Checkout() {
                                                         <div className="mb-24">
                                                             <input
                                                                 type="text"
-                                                                className="form-control"
-                                                                id="state"
-                                                                name="state"
-                                                                required=""
-                                                                placeholder="State"
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                    <div className="col-sm-6">
-                                                        <div className="mb-24">
-                                                            <input
-                                                                type="text"
-                                                                className="form-control"
-                                                                id="city"
-                                                                name="city"
-                                                                required=""
-                                                                placeholder="City/Town"
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                    <div className="col-sm-6">
-                                                        <div className="mb-24">
-                                                            <input
-                                                                type="text"
-                                                                className="form-control"
-                                                                id="postal-code"
-                                                                name="postal-code"
-                                                                required=""
+                                                                id="postalCode"
+                                                                name="postalCode"
+                                                                value={formData.postalCode}
+                                                                onChange={handleChange}
+                                                                required
                                                                 placeholder="Postal Code"
+                                                                className="form-control"
                                                             />
                                                         </div>
                                                     </div>
-                                                    <div className="col-12">
-                                                        <div className="mb-16">
+                                                    <div className="col-sm-12">
+                                                        <div className="mb-24">
                                                             <input
                                                                 type="text"
                                                                 className="form-control"
                                                                 id="address"
                                                                 name="address"
-                                                                required=""
-                                                                placeholder="Shipping Address"
+                                                                value={formData.address}
+                                                                onChange={handleChange}
+                                                                required
+                                                                placeholder="Address"
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-12">
+                                                        <div className="mb-16">
+                                                            <textarea
+                                                                type="text"
+                                                                className="form-control"
+                                                                id="note"
+                                                                name="note"
+                                                                value={formData.note}
+                                                                onChange={handleChange}
+                                                                placeholder="Note"
                                                             />
                                                         </div>
                                                     </div>
@@ -201,59 +277,43 @@ function Checkout() {
                                                 <h5 className="mb-32">Payment Selection</h5>
                                                 <div className="row">
                                                     <div className="col-lg-4 col-md-6">
-                                                        <div className="payment-option mb-32 mb-lg-0 active">
-                                                            <div className="icon">
-                                                                <img src="assets/media/icons/cod.png" alt="" />
-                                                            </div>
-                                                            <h6>Cash on Delivery</h6>
+                                                        <div className="payment-option mb-32 mb-md-0">
+                                                            <input
+                                                                type="checkbox"
+                                                                name="payment_method"
+                                                                id="COD"
+                                                                checked={formData.payment_method === 'COD'}
+                                                                value="COD"
+                                                                onChange={handlePaymentMethodChange}
+                                                            />
+                                                            <label htmlFor="COD">
+                                                                <span>Cash On Delivery</span>
+                                                            </label>
+                                                            <img
+                                                                style={{ width: 40, marginLeft: 30 }}
+                                                                src={cod}
+                                                                alt="COD"
+                                                            />
                                                         </div>
                                                     </div>
                                                     <div className="col-lg-4 col-md-6">
                                                         <div className="payment-option mb-32 mb-lg-0">
-                                                            <div className="icon">
-                                                                <img
-                                                                    src="assets/media/icons/bt.png"
-                                                                    alt="Bank Transfer Icon"
-                                                                />
-                                                            </div>
-                                                            <h6>Bank Transfer</h6>
-                                                            <div className="payment-list">
-                                                                <ul>
-                                                                    <li>
-                                                                        <a
-                                                                            href="#"
-                                                                            style={{
-                                                                                color: 'white',
-                                                                                padding: '0px 90px',
-                                                                            }}
-                                                                        >
-                                                                            PayPal
-                                                                        </a>
-                                                                    </li>
-                                                                    <li>
-                                                                        <a
-                                                                            href="#"
-                                                                            style={{
-                                                                                color: 'white',
-                                                                                padding: '0px 90px',
-                                                                            }}
-                                                                        >
-                                                                            MoMo
-                                                                        </a>
-                                                                    </li>
-                                                                    <li>
-                                                                        <a
-                                                                            href="#"
-                                                                            style={{
-                                                                                color: 'white',
-                                                                                padding: '0px 90px',
-                                                                            }}
-                                                                        >
-                                                                            VN Pay
-                                                                        </a>
-                                                                    </li>
-                                                                </ul>
-                                                            </div>
+                                                            <input
+                                                                type="checkbox"
+                                                                name="payment_method"
+                                                                id="VNPAY"
+                                                                checked={formData.payment_method === 'VNPAY'}
+                                                                value="VNPAY"
+                                                                onChange={handlePaymentMethodChange}
+                                                            />
+                                                            <label htmlFor="VNPAY">
+                                                                <span>VNPay</span>
+                                                            </label>
+                                                            <img
+                                                                style={{ width: 35, marginLeft: 80 }}
+                                                                src={VNPAY}
+                                                                alt="VNPAY"
+                                                            />
                                                         </div>
                                                     </div>
                                                 </div>
@@ -272,18 +332,22 @@ function Checkout() {
                                                 </div>
                                                 <ul className="unstyled ordered-products mb-32">
                                                     {cartItems.map((item, index) => (
-                                                        <li className="mb-16">
+                                                        <li className="mb-16" key={index}>
                                                             <div className="p-detail">
-                                                                <img src="assets/media/products/ps-1.png" alt="" />
+                                                                <img
+                                                                    style={{ width: 80 }}
+                                                                    src={`http://localhost:8082/api/v1/product-images/images/${item.productImages[0]}`}
+                                                                    alt="Product"
+                                                                />
                                                                 <div>
-                                                                    <h6>{item.product.name}</h6>
+                                                                    <h6>{item.productName}</h6>
                                                                     <h6 className="medium-gray">
-                                                                        Quantity:{item.quantity}
+                                                                        Quantity: {item.quantity}
                                                                     </h6>
                                                                 </div>
                                                             </div>
                                                             <h6 className="light-gray">
-                                                                ${item.quantity * item.unitPrice}
+                                                                ${item.quantity * item.productPrice}
                                                             </h6>
                                                         </li>
                                                     ))}
@@ -301,7 +365,7 @@ function Checkout() {
                                                             className="form-control"
                                                             id="p-code"
                                                             name="p-code"
-                                                            required=""
+                                                            required
                                                             placeholder="Enter Your Code"
                                                         />
                                                         <button type="submit">APPLY</button>
@@ -322,19 +386,17 @@ function Checkout() {
                                                 <h5>TOTAL COST</h5>
                                                 <h5 className="color-primary">${totalCost}</h5>
                                             </div>
-                                            <a href="/thankyou" className="cus-btn primary w-100">
+                                            <button onClick={handleSubmit} className="cus-btn primary w-100">
                                                 Place Order
-                                            </a>
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        </section>
-                        {/* Shop Area End */}
-                    </div>
-                    {/* Main Content End */}
+                            )}
+                        </div>
+                    </section>
                 </div>
-            </>
+            </div>
         </>
     );
 }

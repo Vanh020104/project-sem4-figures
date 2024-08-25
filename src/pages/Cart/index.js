@@ -1,58 +1,97 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import image1 from '~/assets/media/products/p-1.png';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import image1 from '~/assets/media/products/p-1.jpg';
 function Cart() {
     const [cartItems, setCartItems] = useState([]);
     const [totalCost, setTotalCost] = useState(0);
+    const [isLoggedIn, setIsLoggedIn] = useState(true);
 
     useEffect(() => {
         const token = localStorage.getItem('token');
-        if (token) {
-            const userId = localStorage.getItem('userId');
-
-            // Fetch the order details
-            axios
-                .get(`http://localhost:8084/api/v1/orders/user/${userId}`)
-                .then((response) => {
-                    const order = response.data;
-                    setTotalCost(order.totalPrice);
-
-                    // For each orderDetail, fetch the corresponding product details
-                    const productRequests = order.orderDetails.map((item) =>
-                        axios
-                            .get(`http://localhost:8082/api/v1/products/${item.id.productId}`)
-                            .then((productResponse) => ({
-                                ...item,
-                                product: productResponse.data,
-                            })),
-                    );
-
-                    // Wait for all product requests to complete
-                    Promise.all(productRequests)
-                        .then((fullCartItems) => {
-                            setCartItems(fullCartItems);
-                            const total = fullCartItems.reduce((acc, item) => acc + item.quantity * item.unitPrice, 0);
-                            setTotalCost(total);
-                        })
-                        .catch((error) => {
-                            console.error('Error fetching product details:', error);
-                        });
-                })
-                .catch((error) => {
-                    console.error('Error fetching the cart data:', error);
-                });
+        if (!token) {
+            setIsLoggedIn(false);
+            return;
         }
+
+        const userId = localStorage.getItem('userId');
+
+        // Fetch the cart details
+        axios
+            .get(`http://localhost:8081/api/v1/cart/user/${userId}`)
+            .then((response) => {
+                const cartData = response.data.data;
+                setCartItems(cartData);
+                const total = cartData.reduce((acc, item) => acc + item.quantity * item.productPrice, 0);
+                setTotalCost(total);
+            })
+            .catch((error) => {
+                console.error('Error fetching the cart data:', error);
+            });
     }, []);
+
+    const handleDeleteItem = (productId) => {
+        const userId = localStorage.getItem('userId');
+
+        axios
+            .delete('http://localhost:8081/api/v1/cart', {
+                data: {
+                    userId: userId,
+                    productId: productId,
+                },
+            })
+            .then((response) => {
+                toast.success('Product removed from cart');
+                const updatedCartItems = cartItems.filter((item) => item.id.productId !== productId);
+                setCartItems(updatedCartItems);
+                const total = updatedCartItems.reduce((acc, item) => acc + item.quantity * item.productPrice, 0);
+                setTotalCost(total);
+            })
+            .catch((error) => {
+                console.error('Error removing item from cart:', error);
+                toast.error('Failed to remove item from cart');
+            });
+    };
+
+    const handleUpdateQuantity = (userId, productId, newQuantity) => {
+        axios
+            .put(
+                `http://localhost:8081/api/v1/cart/updateQuantity?quantity=${newQuantity}`,
+                {
+                    userId: userId,
+                    productId: productId,
+                },
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                },
+            )
+            .then((response) => {
+                toast.success('Quantity updated successfully');
+                const updatedCartItems = cartItems.map((item) => {
+                    if (item.id.productId === productId) {
+                        return { ...item, quantity: newQuantity };
+                    }
+                    return item;
+                });
+                setCartItems(updatedCartItems);
+                const total = updatedCartItems.reduce((acc, item) => acc + item.quantity * item.productPrice, 0);
+                setTotalCost(total);
+            })
+            .catch((error) => {
+                console.error('Error updating quantity:', error);
+                toast.error('Failed to update quantity');
+            });
+    };
 
     return (
         <>
-            {/* Back To Top Start */}
             <a href="#main-wrapper" id="backto-top" className="back-to-top">
                 <i className="fas fa-angle-up" />
             </a>
-            {/* Main Wrapper Start */}
             <div id="main-wrapper" className="main-wrapper overflow-hidden">
-                {/* Page Start Banner Area Start */}
                 <div className="page-title-banner p-64">
                     <div className="container">
                         <div className="content">
@@ -68,14 +107,43 @@ function Cart() {
                         </div>
                     </div>
                 </div>
-                {/* Page Start Banner Area End */}
-                {/* Main Content Start */}
                 <div className="page-content">
-                    {/* cart Area Start */}
                     <section className="cart p-40">
                         <div className="container">
-                            {cartItems.length === 0 ? (
-                                <p>Your cart is empty. Add some products to your cart!</p>
+                            {!isLoggedIn ? (
+                                <p
+                                    style={{
+                                        textAlign: 'center',
+                                        fontSize: '20px',
+                                        display: 'flex',
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                        color: 'white',
+                                        backgroundColor: '#3cbc1c',
+                                        width: 500,
+                                        margin: '0 auto',
+                                        padding: 20,
+                                    }}
+                                >
+                                    Please log in to view your cart.
+                                </p>
+                            ) : cartItems.length === 0 ? (
+                                <p
+                                    style={{
+                                        textAlign: 'center',
+                                        fontSize: '20px',
+                                        display: 'flex',
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                        color: 'white',
+                                        backgroundColor: '#3cbc1c',
+                                        width: 600,
+                                        margin: '0 auto',
+                                        padding: 20,
+                                    }}
+                                >
+                                    Your cart is empty. Add some products to your cart!
+                                </p>
                             ) : (
                                 <div className="row">
                                     <div className="col-xl-8">
@@ -99,42 +167,56 @@ function Cart() {
                                                             <td className="pd">
                                                                 <div className="product-detail-box">
                                                                     <div className="img-block">
-                                                                        <img
-                                                                            src={image1}
-                                                                            // src={item.product.imageUrl}
-                                                                            // alt={item.product.name}
-                                                                        />
-                                                                        <a href="#" className="cross">
+                                                                        {item.productImages &&
+                                                                        item.productImages.length > 0 ? (
+                                                                            <img
+                                                                                src={`http://localhost:8082/api/v1/product-images/images/${item.productImages[0]}`}
+                                                                                // alt={item.productName}
+                                                                            />
+                                                                        ) : (
+                                                                            <p>No image</p>
+                                                                        )}
+                                                                        <a
+                                                                            className="cross"
+                                                                            onClick={() =>
+                                                                                handleDeleteItem(item.id.productId)
+                                                                            }
+                                                                        >
                                                                             <i className="fal fa-times" />
                                                                         </a>
                                                                     </div>
                                                                     <div>
-                                                                        <h5 className="mb-16">{item.product.name}</h5>
+                                                                        <h5 className="mb-16">{item.productName}</h5>
                                                                         <h6 className="color-primary">
-                                                                            {item.product.category.categoryName}{' '}
-                                                                            {/* Sửa chỗ này để render tên danh mục thay vì object */}
+                                                                            ${item.productPrice}
                                                                         </h6>
                                                                     </div>
                                                                 </div>
                                                             </td>
-
                                                             <td>
                                                                 <div className="quantity quantity-wrap">
                                                                     <input
                                                                         style={{ width: 90, height: 35, fontSize: 19 }}
                                                                         type="number"
                                                                         name="quantity"
-                                                                        defaultValue={item.quantity}
+                                                                        value={item.quantity}
                                                                         className="number"
                                                                         min="1"
+                                                                        onChange={(e) =>
+                                                                            handleUpdateQuantity(
+                                                                                localStorage.getItem('userId'),
+                                                                                item.id.productId,
+                                                                                e.target.value,
+                                                                            )
+                                                                        }
                                                                     />
                                                                 </div>
                                                             </td>
                                                             <td>
-                                                                <h6>${item.unitPrice}</h6>
+                                                                <h6>${item.productPrice}</h6>
                                                             </td>
                                                             <td>
-                                                                <h6>${item.quantity * item.unitPrice}</h6>
+                                                                <h6>${item.quantity * item.productPrice}</h6>
                                                             </td>
                                                         </tr>
                                                     ))}
@@ -177,7 +259,6 @@ function Cart() {
                             )}
                         </div>
                     </section>
-                    {/* Shop Area End */}
                 </div>
             </div>
         </>

@@ -1099,7 +1099,7 @@ Elements
 .back-to-top {
     position: fixed;
     bottom: 0px;
-    right: 12px;
+    /* right: 12px; */
     display: block;
     width: 120px;
     height: 120px;
@@ -4565,7 +4565,7 @@ footer .footer-main .widget .input-group button {
     padding: 0;
 }
 .cart .continue-shopping {
-    display: flex;
+    /* display: flex; */
     align-items: center;
     gap: 8px;
 }

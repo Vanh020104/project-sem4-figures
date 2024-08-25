@@ -1,13 +1,47 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
+import { toast } from 'react-toastify';
 
 function Shop() {
     const [products, setProducts] = useState([]);
+    const [category, setCategory] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [minPrice, setMinPrice] = useState(0);
+    const [maxPrice, setMaxPrice] = useState(90000);
+    const [selectedCategory, setSelectedCategory] = useState(null);
+    const productsPerPage = 9;
+    const userId = localStorage.getItem('userId');
 
     useEffect(() => {
-        // Gọi API khi component được mount
-        fetch('http://localhost:8082/api/v1/products')
+        // Fetch products
+        const fetchProducts = async () => {
+            try {
+                const response = selectedCategory
+                    ? await fetch(`http://localhost:8082/api/v1/products/category/${selectedCategory}`)
+                    : await fetch('http://localhost:8082/api/v1/products');
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const data = await response.json();
+                setProducts(data.data.content);
+            } catch (error) {
+                console.error('Error fetching products:', error.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchProducts();
+    }, [selectedCategory]);
+
+    useEffect(() => {
+        // Fetch categories
+        fetch('http://localhost:8082/api/v1/categories')
             .then((response) => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
@@ -15,447 +49,389 @@ function Shop() {
                 return response.json();
             })
             .then((data) => {
-                setProducts(data.content);
-                setLoading(false);
+                setCategory(data.data.content);
             })
             .catch((error) => {
-                setLoading(false);
+                console.error('Error fetching categories:', error.message);
             });
     }, []);
+
+    const handleAddToCart = async (productId) => {
+        try {
+            const response = await axios.post('http://localhost:8081/api/v1/cart', {
+                id: {
+                    userId: userId,
+                    productId: productId,
+                },
+                quantity: 1,
+            });
+            toast.success('The product has been added to the cart!');
+        } catch (error) {
+            console.error('error:', error.response?.data || error.message);
+            toast.error('Failed to add the product to the cart!');
+        }
+    };
+
+    const handlePriceRangeChange = (event) => {
+        const { name, value } = event.target;
+        if (name === 'minPrice') {
+            setMinPrice(value);
+        } else if (name === 'maxPrice') {
+            setMaxPrice(value);
+        }
+    };
+
+    const handleCategoryChange = (categoryId) => {
+        setSelectedCategory(categoryId);
+        setCurrentPage(1);
+    };
+    const filteredProducts = products.filter((product) => {
+        const inPriceRange = product.price >= minPrice && product.price <= maxPrice;
+        const matchesSearchTerm = product.name.toLowerCase().includes(searchTerm.toLowerCase());
+        return inPriceRange && matchesSearchTerm;
+    });
+
+    const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
+    const currentProducts = filteredProducts.slice((currentPage - 1) * productsPerPage, currentPage * productsPerPage);
 
     if (loading) {
         return <div>Loading...</div>;
     }
+
     return (
         <>
-            <>
-                <a href="#main-wrapper" id="backto-top" className="back-to-top">
-                    <i className="fas fa-angle-up" />
-                </a>
-                {/* Main Wrapper Start */}
-                <div id="main-wrapper" className="main-wrapper overflow-hidden">
-                    {/* Header Area Start */}
+            <a href="#main-wrapper" id="backto-top" className="back-to-top">
+                <i className="fas fa-angle-up" />
+            </a>
+            {/* Main Wrapper Start */}
+            <div id="main-wrapper" className="main-wrapper overflow-hidden">
+                {/* Header Area Start */}
 
-                    {/* Header Area end */}
-                    {/* Page Start Banner Area Start */}
-                    <div className="page-title-banner p-64">
-                        <div className="container">
-                            <div className="content">
-                                <a className="mb-16 cus-btn dark" href="/">
-                                    <i className="fas fa-chevron-left" />
-                                    Back to Home
-                                </a>
-                                <h1 className="mb-16">Shop</h1>
-                                <p style={{ color: 'white' }}>
+                {/* Header Area end */}
+                {/* Page Start Banner Area Start */}
+                <div className="page-title-banner p-64">
+                    <div className="container">
+                        <div className="content">
+                            <a className="mb-16 cus-btn dark" href="/">
+                                <i className="fas fa-chevron-left" />
+                                Back to Home
+                            </a>
+                            <h1 className="mb-16">Shop</h1>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <p style={{ color: 'white', margin: 0 }}>
                                     Lorem ipsum dolor sit amet consectetur. Adipiscing elementum <br /> condimentum
                                     tellus quis eros ridiculus quisque. Viverra non etiam in.
                                 </p>
+                                <div style={{ position: 'relative', width: '26%' }}>
+                                    <input
+                                        type="text"
+                                        placeholder="Search for products"
+                                        style={{
+                                            backgroundColor: '#e3e4e6',
+                                            padding: '10px 40px 10px 10px',
+                                            width: '100%',
+                                            borderRadius: 5,
+                                            border: 'none',
+                                            margin: '10px 0',
+                                        }}
+                                        onChange={(event) => setSearchTerm(event.target.value)}
+                                    />
+                                    <i
+                                        className="fas fa-search"
+                                        style={{
+                                            position: 'absolute',
+                                            right: 15,
+                                            top: '50%',
+                                            transform: 'translateY(-50%)',
+                                            color: '#444',
+                                        }}
+                                    />
+                                </div>
                             </div>
                         </div>
                     </div>
-                    {/* Page Start Banner Area End */}
-                    {/* Main Content Start */}
-                    <div className="page-content">
-                        {/* Shop Area Start */}
-                        <section className="p-40">
-                            <div className="container">
-                                <div className="row">
-                                    <div className="col-xl-3 col-lg-4 col-md-8">
-                                        <div className="sidebar mb-48 mb-lg-0">
-                                            <div className="sidebar-block">
-                                                <div className="filters">
-                                                    <h3 className="mb-32">Filters</h3>
-                                                    <form action="https://uiparadox.co.uk/public/templates/gamerx/v2/shop.html">
-                                                        <div className="filter-block">
-                                                            <h4 className="color-primary mb-32">AVAILABILITY</h4>
-                                                            <ul className="unstyled list">
-                                                                <li className="mb-16">
-                                                                    <div className="filter-checkbox">
-                                                                        <input type="checkbox" id="in-stock" />
-                                                                        <label htmlFor="in-stock">In stock</label>
-                                                                    </div>
-                                                                    <h5 className="medium-gray">(120)</h5>
-                                                                </li>
-                                                                <li>
-                                                                    <div className="filter-checkbox">
-                                                                        <input type="checkbox" id="out-of-stock" />
-                                                                        <label
-                                                                            htmlFor="out-of-stock"
-                                                                            style={{ color: 'white' }}
-                                                                        >
-                                                                            Out of stock
-                                                                        </label>
-                                                                    </div>
-                                                                    <h5 className="medium-gray">(10)</h5>
-                                                                </li>
-                                                            </ul>
-                                                        </div>
-                                                        <div className="filter-block">
-                                                            <h4 className="color-primary mb-32">PRICE</h4>
-                                                            <div className="slider-track">
-                                                                <div className="d-flex justify-content-between mb-4p">
-                                                                    <h5 style={{ color: 'white' }}>$110</h5>
-                                                                    <h5 style={{ color: 'white' }}>$799</h5>
-                                                                </div>
-                                                                <input
-                                                                    type="text"
-                                                                    className="js-slider form-control"
-                                                                    defaultValue={0}
-                                                                />
+                </div>
+                {/* Page Start Banner Area End */}
+                {/* Main Content Start */}
+                <div className="page-content">
+                    {/* Shop Area Start */}
+                    <section className="p-40">
+                        <div className="container">
+                            <div className="row">
+                                <div className="col-xl-3 col-lg-4 col-md-8">
+                                    <div className="sidebar mb-48 mb-lg-0">
+                                        <div className="sidebar-block">
+                                            <div className="filters">
+                                                <h3 className="mb-32">Filters</h3>
+                                                <form>
+                                                    <div className="filter-block">
+                                                        <h4 className="color-primary mb-32">PRICE</h4>
+                                                        <div className="slider-track">
+                                                            <div className="d-flex justify-content-between mb-4p">
+                                                                <h5 style={{ color: 'white' }}>{minPrice}</h5>
+                                                                <h5 style={{ color: 'white' }}>{maxPrice}</h5>
+                                                            </div>
+                                                            <input
+                                                                type="range"
+                                                                name="minPrice"
+                                                                min="0"
+                                                                max="90000"
+                                                                value={minPrice}
+                                                                onChange={handlePriceRangeChange}
+                                                                style={{
+                                                                    width: '100%',
+                                                                    background: 'rgb(60, 188, 28)',
+                                                                }}
+                                                            />
+                                                            <input
+                                                                type="range"
+                                                                name="maxPrice"
+                                                                min="0"
+                                                                max="90000"
+                                                                value={maxPrice}
+                                                                onChange={handlePriceRangeChange}
+                                                                style={{
+                                                                    width: '100%',
+                                                                    color: 'rgb(60, 188, 28)',
+                                                                }}
+                                                            />
+                                                            <div className="d-flex justify-content-between mt-2">
+                                                                <span style={{ color: 'rgb(60, 188, 28)' }}>MIN</span>
+                                                                <span style={{ color: 'rgb(60, 188, 28)' }}>MAX</span>
                                                             </div>
                                                         </div>
-                                                        <div className="filter-block">
-                                                            <h4 className="color-primary mb-32">categoty</h4>
+                                                    </div>
+                                                    <div className="filter-block">
+                                                        <h4 className="color-primary mb-32">CATEGORY</h4>
+                                                        {category.map((category) => (
                                                             <ul className="unstyled list">
-                                                                <li className="mb-16">
-                                                                    <div className="filter-checkbox">
-                                                                        <input type="checkbox" id="Headsets" />
-                                                                        <label htmlFor="Headsets">categoty 1</label>
-                                                                    </div>
-                                                                    <h5 className="medium-gray">(9)</h5>
-                                                                </li>
-                                                                <li className="mb-16">
-                                                                    <div className="filter-checkbox">
-                                                                        <input type="checkbox" id="Keyboards" />
-                                                                        <label htmlFor="Keyboards">categoty 2 </label>
-                                                                    </div>
-                                                                    <h5 className="medium-gray">(8)</h5>
-                                                                </li>
-                                                                <li className="mb-16">
-                                                                    <div className="filter-checkbox">
-                                                                        <input type="checkbox" id="Monitors" />
-                                                                        <label htmlFor="Monitors">categoty 3</label>
-                                                                    </div>
-                                                                    <h5 className="medium-gray">(5)</h5>
-                                                                </li>
-                                                            </ul>
-                                                        </div>
-
-                                                        {/* color */}
-                                                        <div className="filter-block">
-                                                            <h4 className="color-primary mb-32">BRANDS</h4>
-                                                            <ul className="unstyled list colors">
-                                                                <li className="mb-16">
-                                                                    <label className="colors-selection">
+                                                                <li className="mb-16" key={category.categoryId}>
+                                                                    <div>
                                                                         <input
-                                                                            type="radio"
-                                                                            name="color"
-                                                                            defaultValue="black"
-                                                                        />
-                                                                        <span className="color non-selected bg-black" />{' '}
-                                                                        Black
-                                                                    </label>
-                                                                    <h5 className="medium-gray">(15)</h5>
-                                                                </li>
-                                                                <li className="mb-16">
-                                                                    <label className="colors-selection">
-                                                                        <input
-                                                                            type="radio"
-                                                                            name="color"
-                                                                            defaultValue="red"
-                                                                        />
-                                                                        <span className="color non-selected bg-red" />{' '}
-                                                                        Red{' '}
-                                                                    </label>
-                                                                    <h5 className="medium-gray">(6)</h5>
-                                                                </li>
-                                                                <li className="mb-16">
-                                                                    <label className="colors-selection">
-                                                                        <input
-                                                                            type="radio"
-                                                                            name="color"
-                                                                            defaultValue="grey"
-                                                                        />
-                                                                        <span className="color non-selected bg-medium-gray" />{' '}
-                                                                        Grey{' '}
-                                                                    </label>
-                                                                    <h5 className="medium-gray">(7)</h5>
-                                                                </li>
-                                                                <li className="mb-16">
-                                                                    <label className="colors-selection">
-                                                                        <input
-                                                                            type="radio"
-                                                                            name="color"
-                                                                            defaultValue="blue"
-                                                                        />
-                                                                        <span className="color non-selected bg-primary" />{' '}
-                                                                        Green{' '}
-                                                                    </label>
-                                                                    <h5 className="medium-gray">(11)</h5>
-                                                                </li>
-                                                                <li className="mb-16">
-                                                                    <label className="colors-selection">
-                                                                        <input
-                                                                            type="radio"
-                                                                            name="color"
-                                                                            defaultValue="white"
-                                                                        />
-                                                                        <span className="color non-selected bg-white" />{' '}
-                                                                        White{' '}
-                                                                    </label>
-                                                                    <h5 className="medium-gray">(0)</h5>
-                                                                </li>
-                                                                <li>
-                                                                    <label className="colors-selection">
-                                                                        <input
-                                                                            type="radio"
-                                                                            name="color"
-                                                                            defaultValue="yellow"
+                                                                            style={{
+                                                                                color: 'white',
+                                                                                width: 40,
+                                                                                height: 20,
+                                                                                cursor: 'pointer',
+                                                                            }}
+                                                                            type="checkbox"
+                                                                            id={category.categoryId}
+                                                                            onChange={() =>
+                                                                                handleCategoryChange(
+                                                                                    category.categoryId,
+                                                                                )
+                                                                            }
                                                                         />
                                                                         <span
-                                                                            style={{ color: 'white' }}
-                                                                            className="color non-selected bg-warning"
-                                                                        />{' '}
-                                                                        Yellow{' '}
-                                                                    </label>
-                                                                    <h5 className="medium-gray">(5)</h5>
+                                                                            style={{
+                                                                                cursor: 'pointer',
+                                                                                fontWeight: 600,
+                                                                            }}
+                                                                            htmlFor="Headsets"
+                                                                        >
+                                                                            {category.categoryName}
+                                                                        </span>
+                                                                    </div>
                                                                 </li>
                                                             </ul>
-                                                        </div>
+                                                        ))}
+                                                    </div>
 
-                                                        {/* size  */}
-
-                                                        <div className="filter-block border-0">
-                                                            <h4 className="color-primary mb-32">Sizes</h4>
-                                                            <ul className="unstyled list">
-                                                                <li className="mb-16">
-                                                                    <div className="filter-checkbox">
-                                                                        <input type="checkbox" id="S" />
-                                                                        <label htmlFor="S">S</label>
-                                                                    </div>
-                                                                    <h5 className="medium-gray">(9)</h5>
-                                                                </li>
-                                                                <li className="mb-16">
-                                                                    <div className="filter-checkbox">
-                                                                        <input type="checkbox" id="M" />
-                                                                        <label htmlFor="M">M</label>
-                                                                    </div>
-                                                                    <h5 className="medium-gray">(8)</h5>
-                                                                </li>
-                                                                <li>
-                                                                    <div className="filter-checkbox">
-                                                                        <input type="checkbox" id="L" />
-                                                                        <label htmlFor="L" style={{ color: 'white' }}>
-                                                                            L
-                                                                        </label>
-                                                                    </div>
-                                                                    <h5 className="medium-gray">(5)</h5>
-                                                                </li>
-                                                            </ul>
-                                                        </div>
-                                                        <div className="text-center">
-                                                            <button
-                                                                type="submit"
-                                                                className="b-unstyle cus-btn primary w-100 text-center"
-                                                            >
-                                                                Apply Filter
-                                                            </button>
-                                                        </div>
-                                                    </form>
-                                                </div>
+                                                    <div className="text-center">
+                                                        <button
+                                                            type="submit"
+                                                            className="b-unstyle cus-btn primary w-100 text-center"
+                                                        >
+                                                            Apply Filter
+                                                        </button>
+                                                    </div>
+                                                </form>
                                             </div>
                                         </div>
                                     </div>
+                                </div>
 
-                                    {/* products */}
+                                {/* products */}
 
-                                    <div
-                                        className="col-xl-9 col-lg-8"
-                                        style={{
-                                            color: 'white',
-                                            fontFamily: 'Arial, sans-serif',
-                                        }}
-                                    >
-                                        <div className="row">
-                                            {products.map((product, index) => (
-                                                <div key={index} className="col-xxl-4 col-sm-4" style={{ padding: 5 }}>
+                                <div
+                                    className="col-xl-9 col-lg-8"
+                                    style={{
+                                        color: 'white',
+                                        fontFamily: 'Arial, sans-serif',
+                                    }}
+                                >
+                                    <div className="row">
+                                        {currentProducts.map((product) => (
+                                            <div
+                                                key={product.productId}
+                                                className="col-xxl-4 col-sm-4"
+                                                style={{ padding: 5 }}
+                                            >
+                                                <div
+                                                    className="product-card mb-30"
+                                                    style={{
+                                                        padding: 15,
+                                                        borderRadius: 10,
+                                                        textAlign: 'center',
+                                                    }}
+                                                >
                                                     <div
-                                                        className="product-card mb-30"
+                                                        className="top-row"
                                                         style={{
-                                                            padding: 15,
-                                                            borderRadius: 10,
-                                                            textAlign: 'center',
+                                                            display: 'flex',
+                                                            justifyContent: 'space-between',
+                                                            alignItems: 'center',
                                                         }}
                                                     >
-                                                        <div
-                                                            className="top-row"
+                                                        <h6
+                                                            className="tag"
                                                             style={{
-                                                                display: 'flex',
-                                                                justifyContent: 'space-between',
-                                                                alignItems: 'center',
+                                                                fontSize: 16,
+                                                                padding: '2px 8px',
+                                                                borderRadius: 5,
                                                             }}
                                                         >
-                                                            <h6
-                                                                className="tag"
-                                                                style={{
-                                                                    fontSize: 16,
-                                                                    padding: '2px 8px',
-                                                                    borderRadius: 5,
-                                                                }}
-                                                            >
-                                                                SALE
-                                                            </h6>
-                                                            <div className="wishlist-icon">
-                                                                <i
-                                                                    className="fal fa-heart"
-                                                                    style={{ color: '#fff', fontSize: 20 }}
-                                                                />
-                                                            </div>
-                                                        </div>
-                                                        <h5 className="mb-12" style={{ color: '#fff' }}>
-                                                            <Link
-                                                                to={`/productdetails/${product.productId}`}
-                                                                style={{
-                                                                    textDecoration: 'none',
-                                                                    fontSize: 19,
-                                                                }}
-                                                            >
-                                                                {product.name}
-                                                            </Link>
-                                                        </h5>
-                                                        <img
-                                                            src="assets/media/products/p-1.png"
-                                                            // src={product.images.imageUrl}
-                                                            alt=""
-                                                            style={{ width: 220 }}
-                                                        />
-                                                        <div className="bottom-row">
-                                                            <div className="price">
-                                                                <h4
-                                                                    style={{
-                                                                        color: 'white',
-                                                                        margin: '10px 0',
-                                                                        fontSize: 20,
-                                                                    }}
-                                                                >
-                                                                    ${product.price}
-                                                                </h4>
-                                                            </div>
-                                                            <a
-                                                                href="cart.html"
-                                                                className="cus-btn primary"
-                                                                style={{
-                                                                    padding: 10,
-                                                                    borderRadius: 5,
-                                                                    textDecoration: 'none',
-                                                                    display: 'inline-block',
-                                                                    marginTop: 10,
-                                                                }}
-                                                            >
-                                                                Add to cart
-                                                                <i
-                                                                    className="fal fa-shopping-cart"
-                                                                    style={{ marginLeft: 5 }}
-                                                                />
-                                                            </a>
+                                                            SALE
+                                                        </h6>
+                                                        <div className="wishlist-icon">
+                                                            <i
+                                                                className="fal fa-heart"
+                                                                style={{ color: '#fff', fontSize: 20 }}
+                                                            />
                                                         </div>
                                                     </div>
+                                                    <h5 className="mb-12" style={{ color: '#fff' }}>
+                                                        <Link
+                                                            to={`/productdetails/${product.productId}`}
+                                                            style={{
+                                                                textDecoration: 'none',
+                                                                fontSize: 19,
+                                                            }}
+                                                        >
+                                                            {product.name}
+                                                        </Link>
+                                                    </h5>
+                                                    {product.images.length > 0 ? (
+                                                        <img
+                                                            src={`http://localhost:8082/api/v1/product-images/images/${product.images[0].imageUrl}`}
+                                                            alt={product.name}
+                                                            style={{ width: 200 }}
+                                                        />
+                                                    ) : (
+                                                        'No Image'
+                                                    )}
+                                                    <div className="bottom-row">
+                                                        <div className="price">
+                                                            <h4
+                                                                style={{
+                                                                    color: 'white',
+                                                                    margin: '10px 0',
+                                                                    fontSize: 20,
+                                                                }}
+                                                            >
+                                                                ${product.price}
+                                                            </h4>
+                                                        </div>
+                                                        <button
+                                                            onClick={() => handleAddToCart(product.productId)}
+                                                            className="cus-btn primary"
+                                                            disabled={product.stockQuantity <= 0}
+                                                            style={{
+                                                                padding: 10,
+                                                                borderRadius: 5,
+                                                                textDecoration: 'none',
+                                                                display: 'inline-block',
+                                                                marginTop: 10,
+                                                            }}
+                                                        >
+                                                            Add to cart
+                                                            <i
+                                                                className="fal fa-shopping-cart"
+                                                                style={{ marginLeft: 5 }}
+                                                            />
+                                                        </button>
+                                                    </div>
                                                 </div>
-                                            ))}
-                                        </div>
-
-                                        {/* end products */}
-
-                                        <ul
-                                            className="pagination"
-                                            style={{ display: 'flex', justifyContent: 'center', marginTop: 20 }}
-                                        >
-                                            <li className="page-item">
-                                                <a
-                                                    href="#"
-                                                    className="page-link arrow"
-                                                    aria-label="previous"
-                                                    style={{
-                                                        color: '#fff',
-                                                        backgroundColor: '#444',
-                                                        border: 'none',
-                                                        padding: '10px 15px',
-                                                        margin: '0 5px',
-                                                        borderRadius: 5,
-                                                        textDecoration: 'none',
-                                                    }}
-                                                >
-                                                    <i className="fas fa-chevron-left" style={{ fontSize: 25 }} />
-                                                </a>
-                                            </li>
-                                            <li className="page-item">
-                                                <a
-                                                    className="page-link current"
-                                                    href="#"
-                                                    style={{
-                                                        color: '#000',
-                                                        backgroundColor: '#00ff00',
-                                                        padding: '10px 15px',
-                                                        margin: '0 5px',
-                                                        borderRadius: 5,
-                                                        textDecoration: 'none',
-                                                    }}
-                                                >
-                                                    1
-                                                </a>
-                                            </li>
-                                            <li className="page-item">
-                                                <a
-                                                    className="page-link"
-                                                    href="#"
-                                                    style={{
-                                                        color: '#fff',
-                                                        backgroundColor: '#444',
-                                                        border: 'none',
-                                                        padding: '10px 15px',
-                                                        margin: '0 5px',
-                                                        borderRadius: 5,
-                                                        textDecoration: 'none',
-                                                    }}
-                                                >
-                                                    2
-                                                </a>
-                                            </li>
-                                            <li className="page-item">
-                                                <a
-                                                    className="page-link"
-                                                    href="#"
-                                                    style={{
-                                                        color: '#fff',
-                                                        backgroundColor: '#444',
-                                                        border: 'none',
-                                                        padding: '10px 15px',
-                                                        margin: '0 5px',
-                                                        borderRadius: 5,
-                                                        textDecoration: 'none',
-                                                    }}
-                                                >
-                                                    3
-                                                </a>
-                                            </li>
-                                            <li className="page-item">
-                                                <a
-                                                    href="#"
-                                                    className="page-link arrow"
-                                                    aria-label="next"
-                                                    style={{
-                                                        color: '#fff',
-                                                        backgroundColor: '#444',
-                                                        border: 'none',
-                                                        padding: '10px 15px',
-                                                        margin: '0 5px',
-                                                        borderRadius: 5,
-                                                        textDecoration: 'none',
-                                                    }}
-                                                >
-                                                    <i className="fas fa-chevron-right" style={{ fontSize: 25 }} />
-                                                </a>
-                                            </li>
-                                        </ul>
+                                            </div>
+                                        ))}
                                     </div>
+
+                                    {/* end products */}
+
+                                    <ul
+                                        className="pagination"
+                                        style={{ display: 'flex', justifyContent: 'center', marginTop: 20 }}
+                                    >
+                                        <li className="page-item">
+                                            <button
+                                                onClick={() => setCurrentPage(currentPage - 1)}
+                                                className="page-link arrow"
+                                                aria-label="previous"
+                                                style={{
+                                                    color: '#fff',
+                                                    backgroundColor: '#444',
+                                                    border: 'none',
+                                                    padding: '10px 15px',
+                                                    margin: '0 5px',
+                                                    borderRadius: 5,
+                                                    textDecoration: 'none',
+                                                }}
+                                                disabled={currentPage === 1}
+                                            >
+                                                <i className="fas fa-chevron-left" style={{ fontSize: 25 }} />
+                                            </button>
+                                        </li>
+                                        {Array.from({ length: totalPages }, (_, index) => (
+                                            <li key={index} className="page-item">
+                                                <button
+                                                    onClick={() => setCurrentPage(index + 1)}
+                                                    className={`page-link ${
+                                                        currentPage === index + 1 ? 'current' : ''
+                                                    }`}
+                                                    style={{
+                                                        color: currentPage === index + 1 ? '#666' : '#fff',
+                                                        backgroundColor: currentPage === index + 1 ? '#00ff00' : '#444',
+                                                        border: 'none',
+                                                        padding: '11px 20px',
+                                                        margin: '0 5px',
+                                                        borderRadius: 5,
+                                                        textDecoration: 'none',
+                                                        fontSize: 16,
+                                                        fontWeight: 600,
+                                                    }}
+                                                >
+                                                    {index + 1}
+                                                </button>
+                                            </li>
+                                        ))}
+                                        <li className="page-item">
+                                            <button
+                                                onClick={() => setCurrentPage(currentPage + 1)}
+                                                className="page-link arrow"
+                                                aria-label="next"
+                                                style={{
+                                                    color: '#fff',
+                                                    backgroundColor: '#444',
+                                                    border: 'none',
+                                                    padding: '10px 15px',
+                                                    margin: '0 5px',
+                                                    borderRadius: 5,
+                                                    textDecoration: 'none',
+                                                }}
+                                                disabled={currentPage === totalPages}
+                                            >
+                                                <i className="fas fa-chevron-right" style={{ fontSize: 25 }} />
+                                            </button>
+                                        </li>
+                                    </ul>
                                 </div>
                             </div>
-                        </section>
-                        {/* Shop Area End */}
-                    </div>
-                    {/* Main Content End */}
+                        </div>
+                    </section>
+                    {/* Shop Area End */}
                 </div>
-            </>
+                {/* Main Content End */}
+            </div>
         </>
     );
 }

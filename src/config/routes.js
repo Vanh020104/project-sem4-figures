@@ -7,6 +7,7 @@ const routes = {
     thankyou: '/thankyou',
     register: '/register',
     productdetails: '/productdetails/:id',
+    myorders: '/myorders',
 };
 
 export default routes;
