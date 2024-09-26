@@ -19,7 +19,11 @@ function Cart() {
 
         // Fetch the cart details
         axios
-            .get(`http://localhost:8081/api/v1/cart/user/${userId}`)
+            .get(`http://localhost:8080/api/v1/cart/user/${userId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            })
             .then((response) => {
                 const cartData = response.data.data;
                 setCartItems(cartData);
@@ -33,12 +37,16 @@ function Cart() {
 
     const handleDeleteItem = (productId) => {
         const userId = localStorage.getItem('userId');
+        const token = localStorage.getItem('token');
 
         axios
-            .delete('http://localhost:8081/api/v1/cart', {
+            .delete('http://localhost:8080/api/v1/cart', {
                 data: {
                     userId: userId,
                     productId: productId,
+                },
+                headers: {
+                    Authorization: `Bearer ${token}`,
                 },
             })
             .then((response) => {
@@ -55,9 +63,10 @@ function Cart() {
     };
 
     const handleUpdateQuantity = (userId, productId, newQuantity) => {
+        const token = localStorage.getItem('token');
         axios
             .put(
-                `http://localhost:8081/api/v1/cart/updateQuantity?quantity=${newQuantity}`,
+                `http://localhost:8080/api/v1/cart/updateQuantity?quantity=${newQuantity}`,
                 {
                     userId: userId,
                     productId: productId,
@@ -65,11 +74,14 @@ function Cart() {
                 {
                     headers: {
                         'Content-Type': 'application/json',
+                        Authorization: `Bearer ${token}`,
                     },
                 },
             )
             .then((response) => {
-                toast.success('Quantity updated successfully');
+                setTimeout(() => {
+                    toast.success('Quantity updated successfully');
+                }, 2000);
                 const updatedCartItems = cartItems.map((item) => {
                     if (item.id.productId === productId) {
                         return { ...item, quantity: newQuantity };
@@ -170,19 +182,23 @@ function Cart() {
                                                                         {item.productImages &&
                                                                         item.productImages.length > 0 ? (
                                                                             <img
-                                                                                src={`http://localhost:8082/api/v1/product-images/images/${item.productImages[0]}`}
+                                                                                src={`http://localhost:8080/api/v1/product-images/images/${item.productImages[0]}`}
                                                                                 // alt={item.productName}
                                                                             />
                                                                         ) : (
                                                                             <p>No image</p>
                                                                         )}
                                                                         <a
+                                                                            style={{ cursor: 'pointer' }}
                                                                             className="cross"
                                                                             onClick={() =>
                                                                                 handleDeleteItem(item.id.productId)
                                                                             }
                                                                         >
-                                                                            <i className="fal fa-times" />
+                                                                            <i
+                                                                                style={{ cursor: 'pointer' }}
+                                                                                className="fal fa-times"
+                                                                            />
                                                                         </a>
                                                                     </div>
                                                                     <div>

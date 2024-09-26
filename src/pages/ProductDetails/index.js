@@ -20,7 +20,7 @@ function ProductDetails() {
     useEffect(() => {
         const fetchProduct = async () => {
             try {
-                const response = await axios.get(`http://localhost:8082/api/v1/products/${id}`);
+                const response = await axios.get(`http://localhost:8080/api/v1/products/id/${id}`);
                 setProduct(response.data.data);
             } catch (error) {
                 setError('Failed to fetch product details');
@@ -49,13 +49,22 @@ function ProductDetails() {
             toast.error('The quantity exceeds the available stock!');
         } else {
             try {
-                const response = await axios.post('http://localhost:8081/api/v1/cart', {
-                    id: {
-                        userId: userId,
-                        productId: product.productId,
+                const token = localStorage.getItem('token');
+                const response = await axios.post(
+                    'http://localhost:8080/api/v1/cart',
+                    {
+                        id: {
+                            userId: userId,
+                            productId: product.productId,
+                        },
+                        quantity: quantity,
                     },
-                    quantity: quantity,
-                });
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    },
+                );
                 toast.success('The product has been added to the cart!');
             } catch (error) {
                 console.error('error:', error.response?.data || error.message);
@@ -93,7 +102,7 @@ function ProductDetails() {
                                         <div className="detail-img-block">
                                             {product.images.length > 0 ? (
                                                 <img
-                                                    src={`http://localhost:8082/api/v1/product-images/images/${product.images[0].imageUrl}`}
+                                                    src={`http://localhost:8080/api/v1/product-images/images/${product.images[0].imageUrl}`}
                                                     style={{ width: '100%', height: 'auto' }}
                                                 />
                                             ) : (

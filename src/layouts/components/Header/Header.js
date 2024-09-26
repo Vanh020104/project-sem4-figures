@@ -34,8 +34,13 @@ function Header() {
 
     const fetchCartItemCount = () => {
         const userId = localStorage.getItem('userId');
+        const token = localStorage.getItem('token');
         axios
-            .get(`http://localhost:8081/api/v1/cart/user/${userId}`)
+            .get(`http://localhost:8080/api/v1/cart/user/${userId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            })
             .then((response) => {
                 const cartItems = response.data.data;
                 const itemCount = cartItems.length;

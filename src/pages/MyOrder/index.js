@@ -1,39 +1,54 @@
 // import React, { useState, useEffect } from 'react';
 // import axios from 'axios';
-
+// import { useNavigate } from 'react-router-dom';
+// import image1 from '~/assets/media/products/p-1.jpg';
 // function MyOrder() {
 //     const [isModalOpen, setIsModalOpen] = useState(false);
 //     const [orders, setOrders] = useState([]);
 //     const [currentPage, setCurrentPage] = useState(1);
 //     const [totalPages, setTotalPages] = useState(1);
+//     const navigate = useNavigate();
 //     const userId = localStorage.getItem('userId');
+//     const token = localStorage.getItem('token');
 
 //     const toggleModal = () => {
 //         setIsModalOpen(!isModalOpen);
 //     };
 
 //     useEffect(() => {
-//         const fetchOrders = async (page) => {
-//             try {
-//                 const response = await axios.post(`http://localhost:8084/api/v1/orders/user/${userId}`, {
-//                     page: page,
-//                     limit: 5,
-//                     status: 0,
-//                 });
+//         if (!token) {
+//             navigate('/login');
+//         } else {
+//             const fetchOrders = async (page) => {
+//                 try {
+//                     const response = await axios.post(
+//                         `http://localhost:8080/api/v1/orders/user/${userId}`,
+//                         {
+//                             page: page,
+//                             limit: 5,
+//                             status: 0,
+//                         },
+//                         {
+//                             headers: {
+//                                 Authorization: `Bearer ${token}`,
+//                             },
+//                         },
+//                     );
 
-//                 if (response.data.code === 200) {
-//                     setOrders(response.data.data.content);
-//                     setTotalPages(response.data.data.totalPages);
-//                 } else {
-//                     console.error('Failed:', response.data.message);
+//                     if (response.data.code === 200) {
+//                         setOrders(response.data.data.content);
+//                         setTotalPages(response.data.data.totalPages);
+//                     } else {
+//                         console.error('Failed:', response.data.message);
+//                     }
+//                 } catch (error) {
+//                     console.error('Error:', error);
 //                 }
-//             } catch (error) {
-//                 console.error('Error:', error);
-//             }
-//         };
+//             };
 
-//         fetchOrders(currentPage);
-//     }, [currentPage, userId]);
+//             fetchOrders(currentPage);
+//         }
+//     }, [currentPage, userId, token, navigate]);
 
 //     const getStatusStyle = (status) => {
 //         switch (status) {
@@ -56,6 +71,7 @@
 
 //     return (
 //         <>
+//             {/* Page content remains the same */}
 //             <a href="#main-wrapper" id="backto-top" className="back-to-top">
 //                 <i className="fas fa-angle-up" />
 //             </a>
@@ -123,7 +139,7 @@
 //                                                             <span>${order.totalPrice}</span>
 //                                                         </td>
 //                                                         <td style={{ textAlign: 'center' }}>
-//                                                             <span>VNPay</span>
+//                                                             <span>{order.paymentMethod} </span>
 //                                                         </td>
 //                                                         <td style={{ textAlign: 'center' }}>
 //                                                             <span style={getStatusStyle(order.status)}>
@@ -146,25 +162,6 @@
 //                                                 ))}
 //                                             </tbody>
 //                                         </table>
-//                                         {/* <div className="pagination">
-//                                             {Array.from({ length: totalPages }, (_, i) => (
-//                                                 <button
-//                                                     key={i + 1}
-//                                                     onClick={() => handlePageChange(i + 1)}
-//                                                     style={{
-//                                                         margin: '0 5px',
-//                                                         padding: '8px 15px',
-//                                                         backgroundColor: i + 1 === currentPage ? '#3cbc1c' : '#ccc',
-//                                                         color: 'white',
-//                                                         border: 'none',
-//                                                         borderRadius: 5,
-//                                                         cursor: 'pointer',
-//                                                     }}
-//                                                 >
-//                                                     {i + 1}
-//                                                 </button>
-//                                             ))}
-//                                         </div> */}
 //                                         <div className="pagination">
 //                                             <button
 //                                                 onClick={() => handlePageChange(currentPage - 1)}
@@ -253,57 +250,97 @@
 //                         display: 'flex',
 //                         justifyContent: 'center',
 //                         alignItems: 'center',
+//                         zIndex: 1000,
 //                     }}
+//                     onClick={toggleModal}
 //                 >
 //                     <div
 //                         style={{
-//                             width: '80%',
-//                             backgroundColor: '#333',
-//                             borderRadius: 10,
-//                             padding: 20,
+//                             backgroundColor: '#f3f2f2',
+//                             padding: 50,
+//                             borderRadius: 5,
+//                             width: '100%',
+//                             zIndex: 1000,
+//                             margin: 200,
+//                             position: 'relative',
 //                         }}
+//                         onClick={(e) => e.stopPropagation()}
 //                     >
-//                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-//                             <h2>Order Details</h2>
-//                             <button onClick={toggleModal} style={{ fontSize: 20, cursor: 'pointer' }}>
-//                                 X
-//                             </button>
-//                         </div>
+//                         <button
+//                             onClick={toggleModal}
+//                             style={{
+//                                 position: 'absolute',
+//                                 top: 10,
+//                                 right: 15,
+//                                 textAlign: 'right',
+//                             }}
+//                         >
+//                             <i style={{ fontSize: 20 }} className="fa-solid fa-xmark"></i>
+//                         </button>
 //                         <table className="cart-table mb-32" style={{ width: '100%' }}>
 //                             <thead>
 //                                 <tr>
-//                                     <th style={{ fontSize: 21, textAlign: 'center' }}>Product</th>
-//                                     <th style={{ fontSize: 21, textAlign: 'center' }}>Quantity</th>
-//                                     <th style={{ fontSize: 21, textAlign: 'center' }}>Price</th>
-//                                     <th style={{ fontSize: 21, textAlign: 'center' }}>Total</th>
+//                                     <th style={{ fontSize: 21, textAlign: 'center', color: 'black' }}>Id</th>
+//                                     <th style={{ fontSize: 21, textAlign: 'center', color: 'black' }}>Products </th>
+//                                     <th style={{ fontSize: 21, textAlign: 'center', color: 'black' }}>Create</th>
+//                                     <th style={{ fontSize: 21, textAlign: 'center', color: 'black' }}>Total</th>
+//                                     <th style={{ fontSize: 21, textAlign: 'center', color: 'black' }}>
+//                                         Payment method
+//                                     </th>
+//                                     <th style={{ fontSize: 21, textAlign: 'center', color: 'black' }}>Status</th>
+//                                     <th style={{ fontSize: 21, textAlign: 'center', color: 'black' }}>Action</th>
 //                                 </tr>
 //                             </thead>
 //                             <tbody>
-//                                 <tr>
-//                                     <td style={{ textAlign: 'center' }}>Product 1</td>
-//                                     <td style={{ textAlign: 'center' }}>2</td>
-//                                     <td style={{ textAlign: 'center' }}>$50</td>
-//                                     <td style={{ textAlign: 'center' }}>$100</td>
+//                                 <tr style={{ color: 'black' }}>
+//                                     <td style={{ textAlign: 'center' }}>1</td>
+//                                     <td className="pd" style={{ textAlign: 'center' }}>
+//                                         <span> Product 1</span> <br />
+//                                         <img style={{ width: 100 }} src={image1} />
+//                                     </td>
+//                                     <td style={{ textAlign: 'center' }}>20/10/2005</td>
+//                                     <td style={{ textAlign: 'center' }}>
+//                                         <span>$890</span>
+//                                     </td>
+//                                     <td style={{ textAlign: 'center' }}>
+//                                         <span>VNPay</span>
+//                                     </td>
+//                                     <td style={{ textAlign: 'center' }}>
+//                                         <span>Complete</span>
+//                                     </td>
+//                                     <td style={{ textAlign: 'center' }}>
+//                                         <a href="#" style={{ color: '#3cbc1c', fontWeight: 600 }}>
+//                                             Feedback
+//                                         </a>
+//                                     </td>
 //                                 </tr>
-//                                 {/* Thêm các hàng khác nếu cần */}
+//                                 <td colSpan="10" style={{ color: '#999' }}>
+//                                     <hr />
+//                                 </td>
+//                                 <tr style={{ color: 'black' }}>
+//                                     <td style={{ textAlign: 'center' }}>1</td>
+//                                     <td className="pd" style={{ textAlign: 'center' }}>
+//                                         <span> Product 1</span> <br />
+//                                         <img style={{ width: 100 }} src={image1} />
+//                                     </td>
+//                                     <td style={{ textAlign: 'center' }}>20/10/2005</td>
+//                                     <td style={{ textAlign: 'center' }}>
+//                                         <span>$890</span>
+//                                     </td>
+//                                     <td style={{ textAlign: 'center' }}>
+//                                         <span>VNPay</span>
+//                                     </td>
+//                                     <td style={{ textAlign: 'center' }}>
+//                                         <span>Complete</span>
+//                                     </td>
+//                                     <td style={{ textAlign: 'center' }}>
+//                                         <a href="#" style={{ color: '#3cbc1c', fontWeight: 600 }}>
+//                                             Feedback
+//                                         </a>
+//                                     </td>
+//                                 </tr>
 //                             </tbody>
 //                         </table>
-//                         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-//                             <button
-//                                 onClick={toggleModal}
-//                                 style={{
-//                                     padding: '10px 20px',
-
-//                                     backgroundColor: '#3cbc1c',
-//                                     color: 'white',
-//                                     border: 'none',
-//                                     borderRadius: 5,
-//                                     cursor: 'pointer',
-//                                 }}
-//                             >
-//                                 Close
-//                             </button>
-//                         </div>
 //                     </div>
 //                 </div>
 //             )}
@@ -316,28 +353,47 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import image1 from '~/assets/media/products/p-1.jpg';
 
 function MyOrder() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [orders, setOrders] = useState([]);
+    const [orderDetails, setOrderDetails] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const navigate = useNavigate();
     const userId = localStorage.getItem('userId');
     const token = localStorage.getItem('token');
 
-    const toggleModal = () => {
+    const toggleModal = async (orderId) => {
+        if (!isModalOpen) {
+            try {
+                const response = await axios.get(`http://localhost:8080/api/v1/orders/${orderId}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+
+                if (response.data.code === 200) {
+                    setOrderDetails(response.data.data.orderDetails);
+                } else {
+                    console.error('Failed:', response.data.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
         setIsModalOpen(!isModalOpen);
     };
 
     useEffect(() => {
         if (!token) {
-            navigate('/login'); // Redirect to login page if not logged in
+            navigate('/login');
         } else {
             const fetchOrders = async (page) => {
                 try {
                     const response = await axios.post(
-                        `http://localhost:8084/api/v1/orders/user/${userId}`,
+                        `http://localhost:8080/api/v1/orders/user/${userId}`,
                         {
                             page: page,
                             limit: 5,
@@ -345,7 +401,7 @@ function MyOrder() {
                         },
                         {
                             headers: {
-                                Authorization: `Bearer ${token}`, // Include the token in the request header
+                                Authorization: `Bearer ${token}`,
                             },
                         },
                     );
@@ -373,7 +429,7 @@ function MyOrder() {
                 return { backgroundColor: 'orange', color: 'white', padding: 7, borderRadius: 3 };
             case 'COMPLETE':
                 return { backgroundColor: 'blue', color: 'white', padding: 7, borderRadius: 3 };
-            case 'CANCELLED':
+            case 'CANCEL':
                 return { backgroundColor: 'red', color: 'white', padding: 7, borderRadius: 3 };
             default:
                 return { backgroundColor: 'gray', color: 'white', padding: 7, borderRadius: 3 };
@@ -454,7 +510,7 @@ function MyOrder() {
                                                             <span>${order.totalPrice}</span>
                                                         </td>
                                                         <td style={{ textAlign: 'center' }}>
-                                                            <span>VNPay</span>
+                                                            <span>{order.paymentMethod} </span>
                                                         </td>
                                                         <td style={{ textAlign: 'center' }}>
                                                             <span style={getStatusStyle(order.status)}>
@@ -465,7 +521,7 @@ function MyOrder() {
                                                             <a
                                                                 href="#"
                                                                 style={{ color: '#3cbc1c' }}
-                                                                onClick={toggleModal}
+                                                                onClick={() => toggleModal(order.id)}
                                                             >
                                                                 <i
                                                                     style={{ fontSize: 20 }}
@@ -552,36 +608,111 @@ function MyOrder() {
                     </section>
                 </div>
             </div>
+
             {/* Modal */}
-            {isModalOpen && (
+            {isModalOpen && orderDetails && (
                 <div
+                    className="modal"
                     style={{
                         position: 'fixed',
+
                         top: 0,
                         left: 0,
                         width: '100%',
                         height: '100%',
-                        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                        backgroundColor: 'rgba(0,0,0,0.5)',
                         display: 'flex',
                         justifyContent: 'center',
                         alignItems: 'center',
+                        zIndex: 1000,
                     }}
-                    onClick={toggleModal}
                 >
                     <div
+                        className="modal-content"
                         style={{
-                            backgroundColor: 'white',
-                            padding: 20,
-                            borderRadius: 5,
-                            width: '100%',
-                            zIndex: 1000,
-                            margin: 200,
+                            backgroundColor: '#f3f2f2',
+                            padding: 30,
+                            borderRadius: 8,
+                            width: '80%',
+                            maxWidth: '800px',
+                            boxShadow: '0 0 10px rgba(0,0,0,0.3)',
                         }}
-                        onClick={(e) => e.stopPropagation()}
                     >
-                        <h3>Modal Title</h3>
-                        <p>Modal content goes here...</p>
-                        <button onClick={toggleModal}>Close</button>
+                        <button
+                            onClick={() => setIsModalOpen(false)}
+                            style={{
+                                position: 'absolute',
+                                top: 10,
+                                right: 10,
+                                backgroundColor: 'transparent',
+                                border: 'none',
+                                fontSize: 30,
+                                cursor: 'pointer',
+                            }}
+                        >
+                            &times;
+                        </button>
+                        <h4 style={{ textAlign: 'center', color: '#3cbc1c', marginBottom: 20 }}>Order Details</h4>
+                        <table className="cart-table mb-32" style={{ width: '100%' }}>
+                            <thead>
+                                <tr>
+                                    <th style={{ fontSize: 21, textAlign: 'center', color: 'black', fontWeight: 400 }}>
+                                        Id
+                                    </th>
+                                    <th style={{ fontSize: 21, textAlign: 'center', color: 'black', fontWeight: 400 }}>
+                                        Products{' '}
+                                    </th>
+                                    <th style={{ fontSize: 21, textAlign: 'center', color: 'black', fontWeight: 400 }}>
+                                        Quantity
+                                    </th>
+                                    <th style={{ fontSize: 21, textAlign: 'center', color: 'black', fontWeight: 400 }}>
+                                        Total
+                                    </th>
+
+                                    <th style={{ fontSize: 21, textAlign: 'center', color: 'black', fontWeight: 400 }}>
+                                        Action
+                                    </th>
+                                </tr>
+                                <td colSpan="10" style={{ color: '#999', marginBottom: 20 }}>
+                                    <hr style={{ color: '#999', marginBottom: 20 }} />
+                                </td>
+                            </thead>
+                            <tbody>
+                                {orderDetails.map((detail, index) => (
+                                    <tr key={index} style={{ color: 'black', marginBottom: 50 }}>
+                                        <td>
+                                            <span style={{ textAlign: 'center' }}>{detail.id.productId}</span>
+                                        </td>
+                                        <td style={{ textAlign: 'center' }}>
+                                            <img
+                                                style={{ width: 100 }}
+                                                src={`http://localhost:8080/api/v1/product-images/images/${detail.product.images[0].imageUrl}`}
+                                                alt={detail.product.name}
+                                            />
+                                            <br />
+                                            {detail.product.name}
+                                        </td>
+                                        <td style={{ textAlign: 'center' }}>{detail.quantity}</td>
+
+                                        <td style={{ textAlign: 'center' }}>${detail.unitPrice * detail.quantity}</td>
+                                        <td style={{ textAlign: 'center' }}>
+                                            <a
+                                                href="#"
+                                                style={{
+                                                    color: 'white',
+                                                    fontWeight: 600,
+                                                    backgroundColor: '#3cbc1c',
+                                                    padding: 5,
+                                                    borderRadius: 3,
+                                                }}
+                                            >
+                                                Feedback
+                                            </a>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             )}

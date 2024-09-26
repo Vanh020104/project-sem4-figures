@@ -1,3 +1,7 @@
+import image1 from '~/assets/media/products/p-1.jpg';
+import image2 from '~/assets/media/products/p-2.jpg';
+import image3 from '~/assets/media/products/p-3.jpg';
+
 function Login() {
     return (
         <>
@@ -283,7 +287,7 @@ function Login() {
                                         <a href="product-detail.html">Gamepad Game Controller </a>
                                     </h5>
                                     <a href="product-detail.html">
-                                        <img src="assets/media/products/p-1.png" alt="" />
+                                        <img src={image1} alt="" />
                                     </a>
                                     <div className="bottom-row">
                                         <div className="price">
@@ -306,11 +310,11 @@ function Login() {
                                         <a href="product-detail.html">Keyboard With RGB Light</a>
                                     </h5>
                                     <a href="product-detail.html">
-                                        <img src="assets/media/products/p-2.png" alt="" />
+                                        <img src={image2} alt="" />
                                     </a>
                                     <div className="bottom-row">
                                         <div className="price">
-                                            <h4>$20.00</h4>
+                                            <h4>$32.00</h4>
                                         </div>
                                         <a href="cart.html" className="cus-btn primary">
                                             Add to cart
@@ -329,11 +333,11 @@ function Login() {
                                         <a href="product-detail.html">Fusion Gaming Headphone</a>
                                     </h5>
                                     <a href="product-detail.html">
-                                        <img src="assets/media/products/p-3.png" alt="" />
+                                        <img src={image3} alt="" />
                                     </a>
                                     <div className="bottom-row">
                                         <div className="price">
-                                            <h4>$20.00</h4>
+                                            <h4>$10.00</h4>
                                         </div>
                                         <a href="cart.html" className="cus-btn primary">
                                             Add to cart

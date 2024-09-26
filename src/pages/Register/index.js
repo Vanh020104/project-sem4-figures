@@ -4,7 +4,7 @@ import axios from 'axios';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 function Register() {
-    const url = 'http://localhost:8081/api/v1/auth/register';
+    const url = 'http://localhost:8080/api/v1/auth/register';
     const [data, setData] = useState({
         username: '',
         email: '',

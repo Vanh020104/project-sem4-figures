@@ -20,8 +20,8 @@ function Shop() {
         const fetchProducts = async () => {
             try {
                 const response = selectedCategory
-                    ? await fetch(`http://localhost:8082/api/v1/products/category/${selectedCategory}`)
-                    : await fetch('http://localhost:8082/api/v1/products');
+                    ? await fetch(`http://localhost:8080/api/v1/products/category/${selectedCategory}`)
+                    : await fetch('http://localhost:8080/api/v1/products/getAll?page=1&limit=10');
 
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
@@ -41,7 +41,7 @@ function Shop() {
 
     useEffect(() => {
         // Fetch categories
-        fetch('http://localhost:8082/api/v1/categories')
+        fetch('http://localhost:8080/api/v1/categories/getAll?page=1&limit=15')
             .then((response) => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
@@ -58,13 +58,23 @@ function Shop() {
 
     const handleAddToCart = async (productId) => {
         try {
-            const response = await axios.post('http://localhost:8081/api/v1/cart', {
-                id: {
-                    userId: userId,
-                    productId: productId,
+            const token = localStorage.getItem('accessToken');
+            console.log('token:', token);
+            const response = await axios.post(
+                'http://localhost:8080/api/v1/cart',
+                {
+                    id: {
+                        userId: userId,
+                        productId: productId,
+                    },
+                    quantity: 1,
                 },
-                quantity: 1,
-            });
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                },
+            );
             toast.success('The product has been added to the cart!');
         } catch (error) {
             console.error('error:', error.response?.data || error.message);
@@ -181,6 +191,7 @@ function Shop() {
                                                                 style={{
                                                                     width: '100%',
                                                                     background: 'rgb(60, 188, 28)',
+                                                                    cursor: 'pointer',
                                                                 }}
                                                             />
                                                             <input
@@ -193,6 +204,7 @@ function Shop() {
                                                                 style={{
                                                                     width: '100%',
                                                                     color: 'rgb(60, 188, 28)',
+                                                                    cursor: 'pointer',
                                                                 }}
                                                             />
                                                             <div className="d-flex justify-content-between mt-2">
@@ -238,10 +250,7 @@ function Shop() {
                                                     </div>
 
                                                     <div className="text-center">
-                                                        <button
-                                                            type="submit"
-                                                            className="b-unstyle cus-btn primary w-100 text-center"
-                                                        >
+                                                        <button className="b-unstyle cus-btn primary w-100 text-center">
                                                             Apply Filter
                                                         </button>
                                                     </div>
@@ -313,7 +322,7 @@ function Shop() {
                                                     </h5>
                                                     {product.images.length > 0 ? (
                                                         <img
-                                                            src={`http://localhost:8082/api/v1/product-images/images/${product.images[0].imageUrl}`}
+                                                            src={`http://localhost:8080/api/v1/product-images/images/${product.images[0].imageUrl}`}
                                                             alt={product.name}
                                                             style={{ width: 200 }}
                                                         />
@@ -337,7 +346,7 @@ function Shop() {
                                                             className="cus-btn primary"
                                                             disabled={product.stockQuantity <= 0}
                                                             style={{
-                                                                padding: 10,
+                                                                padding: 7,
                                                                 borderRadius: 5,
                                                                 textDecoration: 'none',
                                                                 display: 'inline-block',
