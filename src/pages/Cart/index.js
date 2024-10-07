@@ -113,8 +113,9 @@ function Cart() {
                             </a>
                             <h2 className="mb-16">Cart</h2>
                             <p style={{ color: 'white' }}>
-                                Lorem ipsum dolor sit amet consectetur. Adipiscing elementum <br /> condimentum tellus
-                                quis eros ridiculus quisque. Viverra non etiam in.
+                                Review the products you have selected before checking out. Adjust quantity, check total{' '}
+                                <br />
+                                price and apply discount code to complete orders easily.
                             </p>
                         </div>
                     </div>
@@ -167,7 +168,7 @@ function Cart() {
                                             <table className="cart-table mb-32">
                                                 <thead>
                                                     <tr>
-                                                        <th style={{ fontSize: 21 }}>Product Details</th>
+                                                        <th style={{ fontSize: 21 }}>Product</th>
                                                         <th style={{ fontSize: 21 }}>Quantity</th>
                                                         <th style={{ fontSize: 21 }}>Price</th>
                                                         <th style={{ fontSize: 21 }}>Total</th>
@@ -182,7 +183,7 @@ function Cart() {
                                                                         {item.productImages &&
                                                                         item.productImages.length > 0 ? (
                                                                             <img
-                                                                                src={`http://localhost:8080/api/v1/product-images/images/${item.productImages[0]}`}
+                                                                                src={`http://localhost:8080/api/v1/product-images/imagesPost/${item.productImages[0]}`}
                                                                                 // alt={item.productName}
                                                                             />
                                                                         ) : (

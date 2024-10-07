@@ -19,6 +19,7 @@ function Login() {
             const response = await axios.post('http://localhost:8080/api/v1/auth/login', {
                 username,
                 password,
+                platform: 'WEB',
             });
             loginContext(username, response.data.accessToken);
             localStorage.setItem('accessToken', response.data.accessToken);
@@ -142,7 +143,7 @@ function Login() {
                                                     </a>
                                                 </h6>
                                                 <h6>
-                                                    <a href="#" className="color-primary">
+                                                    <a href="/forgotpass" className="color-primary">
                                                         Forgot Password?
                                                     </a>
                                                 </h6>

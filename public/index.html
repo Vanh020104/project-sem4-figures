@@ -221,9 +221,99 @@
         .payment-option:hover .payment-list {
             display: block;
         }
+
+        .filled {
+            color: gold;
+        }
+
+        /* profile */
+
+        .profile-card {
+            background: #f1f1f1;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            padding: 30px;
+            width: 1200px;
+            position: relative;
+        }
+        .profile-card .profile-img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background-color: #8e44ad;
+            margin: 0 auto;
+            margin-top: -50px;
+            position: relative;
+            z-index: 1;
+        }
+        .profile-card .profile-img img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+        }
+        .profile-card h2 {
+            font-size: 24px;
+            margin: 10px 0 5px;
+            color: #333;
+        }
+        .profile-card h4 {
+            font-size: 16px;
+            color: #777;
+            margin: 5px 0;
+        }
+        .profile-card p {
+            font-size: 14px;
+            color: #777;
+            margin: 5px 0;
+        }
+        .profile-card .stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+        }
+        .profile-card .stats div {
+            text-align: center;
+        }
+        .profile-card .stats div h3 {
+            font-size: 20px;
+            margin: 0;
+            color: #333;
+        }
+        .profile-card .stats div p {
+            font-size: 14px;
+            color: #777;
+            margin: 5px 0 0;
+        }
+        .profile-card .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 25px;
+            background: linear-gradient(45deg, #1abc9c, #3498db);
+            color: #fff;
+            text-decoration: none;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        .profile-card .connect,
+        .profile-card .message {
+            position: absolute;
+            top: 20px;
+            font-size: 14px;
+            color: #3498db;
+            cursor: pointer;
+        }
+        .profile-card .connect {
+            left: 20px;
+        }
+        .profile-card .message {
+            right: 20px;
+            color: #1abc9c;
+        }
     </style>
 
     <body>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" />
         <link
             rel="stylesheet"
             href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"

@@ -14,20 +14,30 @@ function ProductDetails() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [quantity, setQuantity] = useState(1);
-    const orderId = Math.floor(Math.random() * 1000000).toString();
+    // const orderId = Math.floor(Math.random() * 1000000).toString();
     const userId = localStorage.getItem('userId');
-
+    const [feedback, setFeedback] = useState([]);
     useEffect(() => {
         const fetchProduct = async () => {
             try {
                 const response = await axios.get(`http://localhost:8080/api/v1/products/id/${id}`);
                 setProduct(response.data.data);
+                fetchFeedback(response.data.data.productId);
             } catch (error) {
                 setError('Failed to fetch product details');
             } finally {
                 setLoading(false);
             }
         };
+        const fetchFeedback = async (productId) => {
+            try {
+                const response = await axios.get(`http://localhost:8080/api/v1/feedback/product/${productId}`);
+                setFeedback(response.data.data); // Set feedback data
+            } catch (error) {
+                console.error('Failed to fetch feedback:', error);
+            }
+        };
+
         fetchProduct();
     }, [id]);
 
@@ -72,6 +82,13 @@ function ProductDetails() {
             }
         }
     };
+    const renderStars = (rating) => {
+        const stars = [];
+        for (let i = 1; i <= 5; i++) {
+            stars.push(<i key={i} className={`fas fa-star ${i <= rating ? 'filled' : ''}`} />);
+        }
+        return stars;
+    };
 
     if (loading) return <div>Loading...</div>;
     if (error) return <div>{error}</div>;
@@ -102,7 +119,7 @@ function ProductDetails() {
                                         <div className="detail-img-block">
                                             {product.images.length > 0 ? (
                                                 <img
-                                                    src={`http://localhost:8080/api/v1/product-images/images/${product.images[0].imageUrl}`}
+                                                    src={`http://localhost:8080/api/v1/product-images/imagesPost/${product.images[0].imageUrl}`}
                                                     style={{ width: '100%', height: 'auto' }}
                                                 />
                                             ) : (
@@ -200,24 +217,20 @@ function ProductDetails() {
                         <div className="row">
                             <div className="col-lg-8">
                                 <div className="reviews-sec m-40">
-                                    <h3 className="mb-32">3 Comments</h3>
-                                    <div className="review-box mb-32">
-                                        <img src={image6} alt="" />
-                                        <div className="block">
-                                            <div className="top-row mb-16">
-                                                <div className="info">
-                                                    <h6 className="dark-gray mb-8">23, July 2023</h6>
-                                                    <h5>Isabella Garcia</h5>
+                                    <h3 className="mb-32">{feedback.length} Comments</h3>
+                                    {feedback.map((item) => (
+                                        <div className="review-box mb-32" key={item.id}>
+                                            <img src={image6} alt="" />
+                                            <div className="block">
+                                                <div className="top-row mb-16">
+                                                    <div className="info">
+                                                        <h5>{renderStars(item.rateStar)}</h5>
+                                                    </div>
                                                 </div>
+                                                <p className="mb-24">{item.comment}</p>
                                             </div>
-                                            <p className="mb-24">
-                                                Lorem ipsum dolor sit amet consectetur. Pharetra luctus in dignissim
-                                                amet. Dignissim adipiscing amet praesent nec libero ultrices ac
-                                                ullamcorper. Enim mattis faucibus viverra integer vestibulum in proin.
-                                                Imperdiet pellentesque nisl cursus arcu nulla massa pharetra. Tristique.
-                                            </p>
                                         </div>
-                                    </div>
+                                    ))}
                                 </div>
                                 <div className="leave-review-sec m-40">
                                     <h3 className="mb-16">Write a Review</h3>

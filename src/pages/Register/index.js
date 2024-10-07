@@ -9,6 +9,7 @@ function Register() {
         username: '',
         email: '',
         password: '',
+        phoneNumber: '',
     });
     const [errors, setErrors] = useState({});
 
@@ -17,6 +18,11 @@ function Register() {
         if (!data.username.trim() || 20 > data.username.length > 3) {
             errors.username = 'username is required';
             toast.error('username is required');
+        }
+
+        if (!data.phoneNumber.trim() || 10 >= data.phoneNumber.length > 6) {
+            errors.phoneNumber = 'phoneNumber is required';
+            toast.error('phoneNumber is required');
         }
         if (!data.email.trim()) {
             errors.email = 'Email is required';
@@ -44,6 +50,7 @@ function Register() {
                     username: data.username,
                     email: data.email,
                     password: data.password,
+                    phoneNumber: data.phoneNumber,
                 })
                 .then((res) => {
                     console.log(res.data);
@@ -156,21 +163,31 @@ function Register() {
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div className="mb-30">
-                                                <input
-                                                    type="email"
-                                                    className="form-control"
-                                                    id="email"
-                                                    required=""
-                                                    onChange={(e) => handle(e)}
-                                                    value={data.email}
-                                                    placeholder="Email"
-                                                />
-                                                {/* {errors.email && (
-                                                    <p style={{ marginTop: 5, color: 'red' }} className="error-message">
-                                                        {errors.email}
-                                                    </p>
-                                                )} */}
+
+                                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                                <div style={{ width: '100%' }} className="mb-30">
+                                                    <input
+                                                        type="email"
+                                                        className="form-control"
+                                                        id="email"
+                                                        required=""
+                                                        onChange={(e) => handle(e)}
+                                                        value={data.email}
+                                                        placeholder="Email"
+                                                    />
+                                                </div>
+                                                <div style={{ margin: '0 10px' }}></div>
+                                                <div style={{ width: '100%' }} className="mb-30">
+                                                    <input
+                                                        type="phoneNumber"
+                                                        className="form-control"
+                                                        id="phoneNumber"
+                                                        required=""
+                                                        onChange={(e) => handle(e)}
+                                                        value={data.phoneNumber}
+                                                        placeholder="Phone Number"
+                                                    />
+                                                </div>
                                             </div>
                                             <div className="mb-30">
                                                 <input

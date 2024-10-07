@@ -8,6 +8,14 @@ const routes = {
     register: '/register',
     productdetails: '/productdetails/:id',
     myorders: '/myorders',
+    blogs: '/blogs',
+    contact: '/contact',
+    blogdetails: '/blogdetails/:id',
+    notfound: '/notfound',
+    profile: '/profile',
+    favourite: '/favourite',
+    forgotpass: '/forgotpass',
+    resetpass: '/reset-password',
 };
 
 export default routes;

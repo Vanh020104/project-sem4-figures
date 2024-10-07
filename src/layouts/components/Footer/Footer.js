@@ -50,11 +50,8 @@ function Footer() {
                                         Lorem ipsum dolor sit amet consectetur. Turpis quis auctor lacus varius semper
                                         pulvinar. Ut felis quam facilisi sit nisi et. Gravida eu integer in pretium.
                                     </p>
-                                    <h4 className="mb-24">Subscribe Our Newsletter</h4>
-                                    <form
-                                        action="https://uiparadox.co.uk/public/templates/gamerx/v2/index.html"
-                                        className="subscribe-letter"
-                                    >
+                                    <h5 className="mb-24">Subscribe Our Newsletter</h5>
+                                    <form className="subscribe-letter">
                                         <div className="input-group">
                                             <input
                                                 type="email"
@@ -72,26 +69,26 @@ function Footer() {
                             </div>
                             <div className="col-xl-2 offset-xl-1 col-sm-6">
                                 <div className="widget  mb-64 mb-xl-0">
-                                    <h4 className="mb-24">Quick Links</h4>
+                                    <h5 className="mb-24">Quick Links</h5>
                                     <ul className="list unstyled">
                                         <li className="mb-8">
                                             <h6>
-                                                <a href="index-2.html">Home</a>
+                                                <a href="/">Home</a>
                                             </h6>
                                         </li>
                                         <li className="mb-8">
                                             <h6>
-                                                <a href="about.html">About us</a>
+                                                <a href="/contact">Contact us</a>
                                             </h6>
                                         </li>
                                         <li className="mb-8">
                                             <h6>
-                                                <a href="services.html">Services</a>
+                                                <a href="/shop">Shop</a>
                                             </h6>
                                         </li>
                                         <li>
                                             <h6>
-                                                <a href="contact.html">Contact</a>
+                                                <a href="/blogs">Blog</a>
                                             </h6>
                                         </li>
                                     </ul>
@@ -99,27 +96,22 @@ function Footer() {
                             </div>
                             <div className="col-xl-2 offset-xl-1 col-sm-6">
                                 <div className="widget  mb-64 mb-xl-0">
-                                    <h4 className="mb-24">Genres</h4>
+                                    <h5 className="mb-24">Genres</h5>
                                     <ul className="list unstyled">
                                         <li className="mb-8">
-                                            <h6>
-                                                <a href="#">PUBG MOBILE</a>
-                                            </h6>
+                                            <h7>
+                                                <a href="#">Son Goku</a>
+                                            </h7>
                                         </li>
                                         <li className="mb-8">
-                                            <h6>
-                                                <a href="#">CS GO</a>
-                                            </h6>
+                                            <h7>
+                                                <a href="#">Vegeta</a>
+                                            </h7>
                                         </li>
                                         <li className="mb-8">
-                                            <h6>
-                                                <a href="#">CODE 2</a>
-                                            </h6>
-                                        </li>
-                                        <li>
-                                            <h6>
-                                                <a href="#">FORTNITE</a>
-                                            </h6>
+                                            <h7>
+                                                <a href="#">Naruto</a>
+                                            </h7>
                                         </li>
                                     </ul>
                                 </div>
@@ -130,7 +122,7 @@ function Footer() {
                                     <ul className="contact-list unstyled mb-16">
                                         <li className="mb-8">
                                             <i className="fal fa-map-marker-alt" />
-                                            <h6>123 Main Street, Anytown, USA.</h6>
+                                            <h6>8A, Ton That Thuyet, Nam Tu Liem, Ha Noi.</h6>
                                         </li>
                                         <li className="mb-8">
                                             <a href="tel:0123456789">

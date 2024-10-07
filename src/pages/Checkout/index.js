@@ -125,8 +125,8 @@ function Checkout() {
                             </a>
                             <h2 className="mb-16">Checkout</h2>
                             <p style={{ color: 'white' }}>
-                                Lorem ipsum dolor sit amet consectetur. Adipiscing elementum <br /> condimentum tellus
-                                quis eros ridiculus quisque. Viverra non etiam in.
+                                Complete the payment process quickly and securely. Confirm delivery information, <br />{' '}
+                                choose payment method and check order before ordering.
                             </p>
                         </div>
                     </div>
@@ -366,7 +366,7 @@ function Checkout() {
                                                             <div className="p-detail">
                                                                 <img
                                                                     style={{ width: 80 }}
-                                                                    src={`http://localhost:8080/api/v1/product-images/images/${item.productImages[0]}`}
+                                                                    src={`http://localhost:8080/api/v1/product-images/imagesPost/${item.productImages[0]}`}
                                                                     alt="Product"
                                                                 />
                                                                 <div>

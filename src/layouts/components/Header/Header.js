@@ -2,7 +2,6 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import React, { useState, useEffect, useContext } from 'react';
 import { UserContext } from '~/context/UserContext ';
-// import { jwtDecode } from 'jwt-decode';
 import jwtDecode from 'jwt-decode';
 import logo from '~/assets/media/logo.png';
 import axios from 'axios';
@@ -24,11 +23,11 @@ function Header() {
             } catch (error) {
                 console.error('Invalid token', error);
                 setIsLoggedIn(false);
-                setCartItemCount(0); // Reset to 0 if the token is invalid
+                setCartItemCount(0);
             }
         } else {
             setIsLoggedIn(false);
-            setCartItemCount(0); // Reset to 0 if not logged in
+            setCartItemCount(0);
         }
     }, []);
 
@@ -56,7 +55,7 @@ function Header() {
         logout();
         setIsLoggedIn(false);
         setUsername('');
-        setCartItemCount(0); // Reset cart item count on logout
+        setCartItemCount(0);
         navigate('/');
         toast.success('Logout success!');
     };
@@ -108,11 +107,14 @@ function Header() {
                                         </li>
 
                                         <li>
-                                            <a href="/about">About Us</a>
+                                            <a href="/contact">Contact</a>
+                                        </li>
+                                        <li>
+                                            <a href="/favourite">Favourite</a>
                                         </li>
 
                                         <li>
-                                            <a href="/404">404 Page</a>
+                                            <a href="/notfound">404 Page</a>
                                         </li>
                                     </ul>
                                 </li>
@@ -122,9 +124,16 @@ function Header() {
                                         <i className="fas fa-caret-down m-1" />
                                     </a>
                                     <ul className="submenu">
-                                        <li>
-                                            <a href="/myorders">My Order</a>
-                                        </li>
+                                        {isLoggedIn && (
+                                            <>
+                                                <li>
+                                                    <a href="/myorders">My Order</a>
+                                                </li>
+                                                <li>
+                                                    <a href="/profile">Profile</a>
+                                                </li>
+                                            </>
+                                        )}
                                         {isLoggedIn ? (
                                             <li>
                                                 <a href="#" onClick={handleLogout}>
@@ -141,10 +150,7 @@ function Header() {
                             </ul>
                             <ul className="right-content unstyled">
                                 <li className="search-form non-active">
-                                    <form
-                                        method="get"
-                                        action="https://uiparadox.co.uk/public/templates/gamerx/v2/shop.html"
-                                    >
+                                    <form method="get">
                                         <div className="search-input-group">
                                             <button type="submit" className="input-group-text">
                                                 <i className="fal fa-search" />

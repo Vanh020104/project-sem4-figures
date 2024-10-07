@@ -1,14 +1,63 @@
 // import React, { useEffect, useState } from 'react';
+// import { useLocation, useParams } from 'react-router-dom';
+// import { toast } from 'react-toastify';
 
 // function Thankyou() {
 //     const [orderData, setOrderData] = useState(null);
-
+//     const [retry, setRetry] = useState(false);
+//     const location = useLocation();
+//     const { orderId } = useParams();
+//     const token = localStorage.getItem('token');
+//     const [bankCode, setBankCode] = useState('');
 //     useEffect(() => {
+//         const query = new URLSearchParams(location.search);
+//         const vnp_ResponseCode = query.get('vnp_ResponseCode');
+//         const vnp_BankCode = query.get('vnp_BankCode');
+//         setBankCode(vnp_BankCode);
 //         const storedOrderData = localStorage.getItem('orderData');
 //         if (storedOrderData) {
 //             setOrderData(JSON.parse(storedOrderData));
 //         }
-//     }, []);
+
+//         if (vnp_ResponseCode) {
+//             if (vnp_ResponseCode !== '00') {
+//                 setRetry(true);
+//             }
+//         } else {
+//             setRetry(false);
+//         }
+//         console.log('vnp_ResponseCode', vnp_ResponseCode);
+//         console.log('vnp_BankCode', bankCode);
+//     }, [location.search]);
+
+//     const handleRetryPayment = async () => {
+//         const data = {
+//             orderId: orderId,
+//             paymentMethod: bankCode,
+//             paymentType: 'REPAYMENT',
+//         };
+
+//         try {
+//             const response = await fetch('http://localhost:8080/api/v1/payment/create_payment', {
+//                 method: 'POST',
+//                 headers: {
+//                     'Content-Type': 'application/json',
+//                     Authorization: `Bearer ${token}`,
+//                 },
+//                 body: JSON.stringify(data),
+//             });
+
+//             if (response.ok) {
+//                 const paymentUrl = await response.text();
+//                 toast.success('Going to checkout!');
+//                 window.location.href = paymentUrl;
+//             } else {
+//                 console.error('Failed to create payment');
+//             }
+//         } catch (error) {
+//             console.error('Error during payment retry:', error);
+//         }
+//     };
 
 //     if (!orderData) {
 //         return <p>Loading...</p>;
@@ -20,13 +69,11 @@
 
 //     return (
 //         <>
-//             {/* Back To Top Start */}
 //             <a href="#main-wrapper" id="backto-top" className="back-to-top">
 //                 <i className="fas fa-angle-up" />
 //             </a>
-//             {/* Main Wrapper Start */}
+
 //             <div id="main-wrapper" className="main-wrapper overflow-hidden">
-//                 {/* Page Start Banner Area Start */}
 //                 <div className="page-title-banner p-64">
 //                     <div className="container">
 //                         <div className="content">
@@ -36,14 +83,12 @@
 //                             </a>
 //                             <h2 className="mb-16">Thank You</h2>
 //                             <p style={{ color: 'white' }}>
-//                                 Thank you for trusting and ordering our products! Your order will be delivered to you
-//                                 soon!
+//                                 Cảm ơn bạn đã tin tưởng và đặt hàng của chúng tôi! Đơn hàng của bạn sẽ sớm được giao!
 //                             </p>
 //                         </div>
 //                     </div>
 //                 </div>
-//                 {/* Page Start Banner Area End */}
-//                 {/* Main Content Start */}
+
 //                 <div className="page-content">
 //                     {/* cart Area Start */}
 //                     <section className="cart p-40">
@@ -177,9 +222,27 @@
 //                                             <h7>TOTAL COST</h7>
 //                                             <h6 className="color-primary">${totalCost.toFixed(2)}</h6>
 //                                         </div>
-//                                         <a href="/myorders" className="cus-btn primary w-100">
-//                                             Complete
-//                                         </a>
+//                                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+//                                             <a
+//                                                 href="/myorders"
+//                                                 style={{ margin: '0 10px 0 0' }}
+//                                                 className="cus-btn primary w-100"
+//                                             >
+//                                                 Complete
+//                                             </a>
+//                                             {retry && (
+//                                                 <a
+//                                                     style={{
+//                                                         margin: '0 0 0 10px',
+//                                                         backgroundColor: '#e04040',
+//                                                     }}
+//                                                     onClick={handleRetryPayment}
+//                                                     className="cus-btn primary w-100"
+//                                                 >
+//                                                     Retry Payment
+//                                                 </a>
+//                                             )}
+//                                         </div>
 //                                     </div>
 //                                 </div>
 //                             </div>
@@ -195,35 +258,95 @@
 // export default Thankyou;
 
 import React, { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 function Thankyou() {
     const [orderData, setOrderData] = useState(null);
     const [retry, setRetry] = useState(false);
-    const location = useLocation(); // Lấy URL tham số
+    const location = useLocation();
+    const { orderId } = useParams();
+    const token = localStorage.getItem('token');
+    const [bankCode, setBankCode] = useState('');
 
     useEffect(() => {
-        // Trích xuất tham số từ URL
         const query = new URLSearchParams(location.search);
         const vnp_ResponseCode = query.get('vnp_ResponseCode');
-
-        // Lấy dữ liệu đơn hàng từ localStorage
+        const vnp_BankCode = query.get('vnp_BankCode');
+        setBankCode(vnp_BankCode);
         const storedOrderData = localStorage.getItem('orderData');
         if (storedOrderData) {
             setOrderData(JSON.parse(storedOrderData));
         }
 
-        // Kiểm tra mã phản hồi và thiết lập trạng thái retry nếu cần
+        // Nếu vnp_ResponseCode tồn tại
         if (vnp_ResponseCode) {
+            // Kiểm tra nếu vnp_ResponseCode khác '00'
             if (vnp_ResponseCode !== '00') {
                 setRetry(true);
+            } else {
+                // Nếu vnp_ResponseCode === '00', gọi API để cập nhật trạng thái đơn hàng thành PENDING
+                const updateOrderStatus = async () => {
+                    try {
+                        const response = await fetch(
+                            `http://localhost:8080/api/v1/orders/changeStatus/${orderId}?status=PENDING`,
+                            {
+                                method: 'PUT',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    Authorization: `Bearer ${token}`,
+                                },
+                            },
+                        );
+
+                        if (response.ok) {
+                            // toast.success('Order status updated to PENDING!');
+                        } else {
+                            // toast.error('Failed to update order status.');
+                        }
+                    } catch (error) {
+                        // console.error('Error updating order status:', error);
+                        // toast.error('Error occurred while updating order status.');
+                    }
+                };
+
+                updateOrderStatus();
             }
         } else {
-            // Nếu không có vnp_ResponseCode trong URL, thiết lập retry thành false
             setRetry(false);
         }
-        console.log('vnp_ResponseCode', vnp_ResponseCode);
-    }, [location.search]);
+        // console.log('vnp_ResponseCode', vnp_ResponseCode);
+        // console.log('vnp_BankCode', bankCode);
+    }, [location.search, orderId, token]);
+
+    const handleRetryPayment = async () => {
+        const data = {
+            orderId: orderId,
+            paymentMethod: bankCode,
+            paymentType: 'REPAYMENT',
+        };
+
+        try {
+            const response = await fetch('http://localhost:8080/api/v1/payment/create_payment', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify(data),
+            });
+
+            if (response.ok) {
+                const paymentUrl = await response.text();
+                toast.success('Going to checkout!');
+                window.location.href = paymentUrl;
+            } else {
+                console.error('Failed to create payment');
+            }
+        } catch (error) {
+            console.error('Error during payment retry:', error);
+        }
+    };
 
     if (!orderData) {
         return <p>Loading...</p>;
@@ -235,13 +358,11 @@ function Thankyou() {
 
     return (
         <>
-            {/* Back To Top Start */}
             <a href="#main-wrapper" id="backto-top" className="back-to-top">
                 <i className="fas fa-angle-up" />
             </a>
-            {/* Main Wrapper Start */}
+
             <div id="main-wrapper" className="main-wrapper overflow-hidden">
-                {/* Page Start Banner Area Start */}
                 <div className="page-title-banner p-64">
                     <div className="container">
                         <div className="content">
@@ -251,14 +372,12 @@ function Thankyou() {
                             </a>
                             <h2 className="mb-16">Thank You</h2>
                             <p style={{ color: 'white' }}>
-                                Thank you for trusting and ordering our products! Your order will be delivered to you
-                                soon!
+                                Cảm ơn bạn đã tin tưởng và đặt hàng của chúng tôi! Đơn hàng của bạn sẽ sớm được giao!
                             </p>
                         </div>
                     </div>
                 </div>
-                {/* Page Start Banner Area End */}
-                {/* Main Content Start */}
+
                 <div className="page-content">
                     {/* cart Area Start */}
                     <section className="cart p-40">
@@ -389,9 +508,19 @@ function Thankyou() {
                                             </div>
                                         </div>
                                         <div className="block-row mb-32">
-                                            <h7>TOTAL COST</h7>
+                                            <h7>Total Cost</h7>
                                             <h6 className="color-primary">${totalCost.toFixed(2)}</h6>
                                         </div>
+
+                                        {/* Nút Retry */}
+                                        {/* {retry && (
+                                            <button
+                                                className="cus-btn dark full-width mb-32"
+                                                onClick={handleRetryPayment}
+                                            >
+                                                Retry Payment
+                                            </button>
+                                        )} */}
                                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                             <a
                                                 href="/myorders"
@@ -401,16 +530,16 @@ function Thankyou() {
                                                 Complete
                                             </a>
                                             {retry && (
-                                                <a
+                                                <button
                                                     style={{
                                                         margin: '0 0 0 10px',
                                                         backgroundColor: '#e04040',
                                                     }}
-                                                    href="#"
+                                                    onClick={handleRetryPayment}
                                                     className="cus-btn primary w-100"
                                                 >
                                                     Retry Payment
-                                                </a>
+                                                </button>
                                             )}
                                         </div>
                                     </div>
@@ -418,7 +547,6 @@ function Thankyou() {
                             </div>
                         </div>
                     </section>
-                    {/* Shop Area End */}
                 </div>
             </div>
         </>

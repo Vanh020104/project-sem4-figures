@@ -14,6 +14,7 @@ function Shop() {
     const [selectedCategory, setSelectedCategory] = useState(null);
     const productsPerPage = 9;
     const userId = localStorage.getItem('userId');
+    const [favoriteProductId, setFavoriteProductId] = useState(null);
 
     useEffect(() => {
         // Fetch products
@@ -104,6 +105,33 @@ function Shop() {
     const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
     const currentProducts = filteredProducts.slice((currentPage - 1) * productsPerPage, currentPage * productsPerPage);
 
+    const handleFavoriteClick = async (productId) => {
+        const token = localStorage.getItem('accessToken');
+        try {
+            const response = await fetch('http://localhost:8080/api/v1/white_list', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                    userId: userId,
+                    productId: productId,
+                }),
+            });
+
+            if (response.ok) {
+                setFavoriteProductId(productId);
+                toast.success('Added to favorites list!');
+            } else {
+                console.error('Failed to add to white list');
+                toast.error('Failed to add to white list');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+
     if (loading) {
         return <div>Loading...</div>;
     }
@@ -129,8 +157,8 @@ function Shop() {
                             <h1 className="mb-16">Shop</h1>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                 <p style={{ color: 'white', margin: 0 }}>
-                                    Lorem ipsum dolor sit amet consectetur. Adipiscing elementum <br /> condimentum
-                                    tellus quis eros ridiculus quisque. Viverra non etiam in.
+                                    Explore our diverse product collection with options to suit every need. Shop easily
+                                    and quickly <br /> with quality products and attractive offers.
                                 </p>
                                 <div style={{ position: 'relative', width: '26%' }}>
                                     <input
@@ -305,7 +333,14 @@ function Shop() {
                                                         <div className="wishlist-icon">
                                                             <i
                                                                 className="fal fa-heart"
-                                                                style={{ color: '#fff', fontSize: 20 }}
+                                                                style={{
+                                                                    color:
+                                                                        favoriteProductId === product.productId
+                                                                            ? 'red'
+                                                                            : '#fff',
+                                                                    fontSize: 20,
+                                                                }}
+                                                                onClick={() => handleFavoriteClick(product.productId)}
                                                             />
                                                         </div>
                                                     </div>
@@ -322,7 +357,7 @@ function Shop() {
                                                     </h5>
                                                     {product.images.length > 0 ? (
                                                         <img
-                                                            src={`http://localhost:8080/api/v1/product-images/images/${product.images[0].imageUrl}`}
+                                                            src={`http://localhost:8080/api/v1/product-images/imagesPost/${product.images[0].imageUrl}`}
                                                             alt={product.name}
                                                             style={{ width: 200 }}
                                                         />
