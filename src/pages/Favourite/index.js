@@ -236,7 +236,7 @@ function Favorite() {
                                         );
                                     })}
 
-                                    <ul className="pagination">
+                                    {/* <ul className="pagination">
                                         <li className="page-item">
                                             <a href="#" className="page-link arrow" aria-label="next">
                                                 <i style={{ color: '#3cbc1c' }} className="fa-solid fa-chevron-left" />
@@ -262,7 +262,7 @@ function Favorite() {
                                                 <i style={{ color: '#3cbc1c' }} className="fa-solid fa-chevron-right" />
                                             </a>
                                         </li>
-                                    </ul>
+                                    </ul> */}
                                 </div>
                             </div>
                         </div>

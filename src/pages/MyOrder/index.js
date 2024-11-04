@@ -186,7 +186,7 @@ function MyOrder() {
                                                                 const [date, time] = order.createdAt.split('T');
                                                                 return (
                                                                     <>
-                                                                        <div>{time.split('.')[0]}</div>
+                                                                        {/* <div>{time.split('.')[0]}</div> */}
                                                                         <div>{date}</div>
                                                                     </>
                                                                 );
@@ -395,7 +395,7 @@ function MyOrder() {
                                         {orderStatus === 'COMPLETE' && (
                                             <td style={{ textAlign: 'center' }}>
                                                 <Link
-                                                    to={`/productdetails/${detail.id.productId}?orderId/${detail.id.orderId}`}
+                                                    to={`/productdetails/${detail.id.productId}?orderId=${detail.id.orderId}`}
                                                     style={{
                                                         color: 'white',
                                                         fontWeight: 600,

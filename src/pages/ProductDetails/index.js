@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import image1 from '~/assets/media/products/p-1.jpg';
 import image2 from '~/assets/media/products/p-2.jpg';
@@ -9,14 +9,18 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 function ProductDetails() {
-    const { id } = useParams(); // Get the productId from the URL
+    const { id } = useParams();
+    const location = useLocation();
+    const params = new URLSearchParams(location.search);
+    const orderId = params.get('orderId');
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [quantity, setQuantity] = useState(1);
-    // const orderId = Math.floor(Math.random() * 1000000).toString();
     const userId = localStorage.getItem('userId');
     const [feedback, setFeedback] = useState([]);
+    const [rateStar, setRateStar] = useState(5);
+    const [comment, setComment] = useState('');
     useEffect(() => {
         const fetchProduct = async () => {
             try {
@@ -29,10 +33,16 @@ function ProductDetails() {
                 setLoading(false);
             }
         };
-        const fetchFeedback = async (productId) => {
+        const fetchFeedback = async (productId, page, size) => {
             try {
-                const response = await axios.get(`http://localhost:8080/api/v1/feedback/product/${productId}`);
-                setFeedback(response.data.data); // Set feedback data
+                const response = await axios.get(`http://localhost:8080/api/v1/feedback/product/${productId}`, {
+                    params: {
+                        page: page,
+                        size: size,
+                    },
+                });
+                const feedbackData = response.data.data.content;
+                setFeedback(Array.isArray(feedbackData) ? feedbackData : []);
             } catch (error) {
                 console.error('Failed to fetch feedback:', error);
             }
@@ -40,6 +50,35 @@ function ProductDetails() {
 
         fetchProduct();
     }, [id]);
+
+    const handleFeedbackSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            const token = localStorage.getItem('token');
+            const response = await axios.post(
+                'http://localhost:8080/api/v1/feedback',
+                {
+                    rateStar: rateStar,
+                    comment: comment,
+                    orderDetail: {
+                        id: {
+                            orderId: orderId,
+                            productId: id,
+                        },
+                    },
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                },
+            );
+            toast.success('Feedback submitted successfully!');
+        } catch (error) {
+            console.error('Failed to submit feedback:', error);
+            toast.error('Failed to submit feedback');
+        }
+    };
 
     const handleQuantityChange = (e) => {
         const newQuantity = Number(e.target.value);
@@ -234,84 +273,66 @@ function ProductDetails() {
                                 </div>
                                 <div className="leave-review-sec m-40">
                                     <h3 className="mb-16">Write a Review</h3>
-                                    <form
-                                        action="https://uiparadox.co.uk/public/templates/gamerx/v2/product-detail.html"
-                                        className="form-validator"
-                                    >
+                                    <form onSubmit={handleFeedbackSubmit}>
                                         <div className="form-group">
                                             <fieldset>
                                                 <span className="star-cb-group">
-                                                    <input type="radio" id="rating-5" name="rating" defaultValue={5} />
+                                                    <input
+                                                        type="radio"
+                                                        id="rating-5"
+                                                        name="rating"
+                                                        value={5}
+                                                        checked={rateStar === 5}
+                                                        onChange={() => setRateStar(5)}
+                                                    />
                                                     <label htmlFor="rating-5">5</label>
-                                                    <input type="radio" id="rating-4" name="rating" defaultValue={4} />
+                                                    <input
+                                                        type="radio"
+                                                        id="rating-4"
+                                                        name="rating"
+                                                        value={4}
+                                                        checked={rateStar === 4}
+                                                        onChange={() => setRateStar(4)}
+                                                    />
                                                     <label htmlFor="rating-4">4</label>
-                                                    <input type="radio" id="rating-3" name="rating" defaultValue={3} />
+                                                    <input
+                                                        type="radio"
+                                                        id="rating-3"
+                                                        name="rating"
+                                                        value={3}
+                                                        checked={rateStar === 3}
+                                                        onChange={() => setRateStar(3)}
+                                                    />
                                                     <label htmlFor="rating-3">3</label>
-                                                    <input type="radio" id="rating-2" name="rating" defaultValue={2} />
+                                                    <input
+                                                        type="radio"
+                                                        id="rating-2"
+                                                        name="rating"
+                                                        value={2}
+                                                        checked={rateStar === 2}
+                                                        onChange={() => setRateStar(2)}
+                                                    />
                                                     <label htmlFor="rating-2">2</label>
                                                     <input
                                                         type="radio"
                                                         id="rating-1"
                                                         name="rating"
-                                                        defaultValue={1}
-                                                        defaultChecked="checked"
+                                                        value={1}
+                                                        checked={rateStar === 1}
+                                                        onChange={() => setRateStar(1)}
                                                     />
                                                     <label htmlFor="rating-1">1</label>
-                                                    <input
-                                                        type="radio"
-                                                        id="rating-0"
-                                                        name="rating"
-                                                        defaultValue={0}
-                                                        className="star-cb-clear"
-                                                    />
-                                                    <label htmlFor="rating-0">0</label>
                                                 </span>
                                             </fieldset>
                                         </div>
-                                        <div className="row">
-                                            <div className="col-md-6">
-                                                <div className="mb-30">
-                                                    <input
-                                                        type="text"
-                                                        className="form-control"
-                                                        id="name"
-                                                        name="name"
-                                                        required=""
-                                                        placeholder="Enter Your Name"
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div className="col-md-6">
-                                                <div className="mb-30">
-                                                    <input
-                                                        type="email"
-                                                        className="form-control"
-                                                        id="review-email"
-                                                        name="review-email"
-                                                        required=""
-                                                        placeholder="Enter Your Email"
-                                                    />
-                                                </div>
-                                            </div>
-                                        </div>
                                         <div className="mb-32">
-                                            <input
-                                                type="text"
-                                                className="form-control"
-                                                id="web"
-                                                name="web"
-                                                required=""
-                                                placeholder="Give your review a title"
-                                            />
-                                        </div>
-                                        <div className="mb-30">
                                             <textarea
                                                 className="form-control"
-                                                name="reply"
-                                                id="reply"
+                                                name="comment"
                                                 rows={4}
                                                 placeholder="Write your review here"
-                                                defaultValue={''}
+                                                value={comment}
+                                                onChange={(e) => setComment(e.target.value)}
                                             />
                                         </div>
                                         <button type="submit" className="b-unstyle cus-btn primary">
