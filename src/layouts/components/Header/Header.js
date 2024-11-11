@@ -149,19 +149,9 @@ function Header() {
                                 </li>
                             </ul>
                             <ul className="right-content unstyled">
-                                <li className="search-form non-active">
-                                    <form method="get">
-                                        <div className="search-input-group">
-                                            <button type="submit" className="input-group-text">
-                                                <i className="fal fa-search" />
-                                            </button>
-                                            <input type="text" className="form-control" placeholder="Search" />
-                                        </div>
-                                    </form>
-                                </li>
                                 <li className="icon">
                                     <a href="javascript:;" className="search-btn">
-                                        <i className="fal fa-search" />
+                                        <i class="fa-regular fa-bell"></i>
                                     </a>
                                 </li>
                                 <li className="icon">

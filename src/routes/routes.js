@@ -21,7 +21,7 @@ import Profile from '~/pages/Profile';
 import Favorite from '~/pages/Favourite';
 import ForgotPass from '~/pages/FogotPass';
 import ResetPass from '~/pages/ResetPassword';
-
+import Return from '~/pages/Return';
 // Public routes
 export const publicRoutes = [
     { path: config.routes.home, component: Home },
@@ -36,6 +36,7 @@ export const publicRoutes = [
     { path: config.routes.profile, component: Profile, component: Profile },
     { path: config.routes.favourite, component: Favorite, component: Favorite },
     { path: config.routes.blogs, component: Blogs, component: Blogs },
+    { path: config.routes.return, component: Return, component: Return },
     { path: config.routes.register, component: Register, layout: null },
     { path: config.routes.login, component: Login, layout: null },
     { path: config.routes.forgotpass, component: ForgotPass, layout: ForgotPass },

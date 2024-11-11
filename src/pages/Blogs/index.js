@@ -78,12 +78,7 @@ function Blogs() {
                                             <h6 className="c-title">{blog.author}</h6>
                                         </div>
                                         <div className="img-block">
-                                            <img
-                                                src={`http://localhost:8080/api/v1/blogs/blog/${blog.imageTitle}`}
-                                                // src={image2}
-                                                style={{ width: 330 }}
-                                                alt={blog.title}
-                                            />
+                                            <img src={blog.imageTitle} style={{ width: 330 }} alt={blog.title} />
                                             <div className="overlay" />
                                             <div className="text-block">
                                                 <p style={{ fontSize: 14 }} className="light-gray mb-16">

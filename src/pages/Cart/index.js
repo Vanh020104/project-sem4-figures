@@ -183,7 +183,7 @@ function Cart() {
                                                                         {item.productImages &&
                                                                         item.productImages.length > 0 ? (
                                                                             <img
-                                                                                src={`http://localhost:8080/api/v1/product-images/imagesPost/${item.productImages[0]}`}
+                                                                                src={item.productImages[0]}
                                                                                 // alt={item.productName}
                                                                             />
                                                                         ) : (

@@ -420,7 +420,7 @@ function Thankyou() {
                                                             <h5 style={{ textAlign: 'center' }}>{item.quantity}</h5>
                                                         </td>
                                                         <td>
-                                                            <h6>${item.unitPrice.toFixed(2)}</h6>
+                                                            <h6>${item.unitPrice}</h6>
                                                         </td>
                                                         <td>
                                                             <h6>${(item.quantity * item.unitPrice).toFixed(2)}</h6>
@@ -450,9 +450,7 @@ function Thankyou() {
                                                         <ul className="unstyled detail">
                                                             <li>
                                                                 <h5>Price</h5>
-                                                                <h5 className="medium-gray">
-                                                                    ${item.unitPrice.toFixed(2)}
-                                                                </h5>
+                                                                <h5 className="medium-gray">${item.unitPrice}</h5>
                                                             </li>
                                                             <li>
                                                                 <h5>Quantity</h5>
@@ -509,7 +507,7 @@ function Thankyou() {
                                         </div>
                                         <div className="block-row mb-32">
                                             <h7>Total Cost</h7>
-                                            <h6 className="color-primary">${totalCost.toFixed(2)}</h6>
+                                            <h6 className="color-primary">${subtotal.toFixed(2)}</h6>
                                         </div>
 
                                         {/* Nút Retry */}

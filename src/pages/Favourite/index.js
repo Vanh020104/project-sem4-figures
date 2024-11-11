@@ -206,15 +206,13 @@ function Favorite() {
                                                         </a>
                                                     </h6>
                                                     <img
-                                                        src={`http://localhost:8080/api/v1/product-images/imagesPost/${product.images[0]?.imageUrl}`}
+                                                        src={product.images[0].imageUrl}
                                                         alt={product.name}
                                                         style={{ width: 150 }}
                                                     />
                                                     <div className="bottom-row">
                                                         <div className="price">
-                                                            <h6 style={{ color: 'white' }}>
-                                                                ${product.price.toFixed(2)}
-                                                            </h6>
+                                                            <h6 style={{ color: 'white' }}>${product.price}</h6>
                                                         </div>
                                                         <a
                                                             style={{ fontSize: 14 }}

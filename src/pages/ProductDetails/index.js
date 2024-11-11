@@ -11,8 +11,9 @@ import 'react-toastify/dist/ReactToastify.css';
 function ProductDetails() {
     const { id } = useParams();
     const location = useLocation();
-    const params = new URLSearchParams(location.search);
+    const params = new URLSearchParams(location.search.replace('?', '&'));
     const orderId = params.get('orderId');
+    const detailId = params.get('detailId');
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -61,9 +62,9 @@ function ProductDetails() {
                     rateStar: rateStar,
                     comment: comment,
                     orderDetail: {
-                        id: {
-                            orderId: orderId,
-                            productId: id,
+                        id: detailId,
+                        order: {
+                            id: orderId,
                         },
                     },
                 },
@@ -158,7 +159,7 @@ function ProductDetails() {
                                         <div className="detail-img-block">
                                             {product.images.length > 0 ? (
                                                 <img
-                                                    src={`http://localhost:8080/api/v1/product-images/imagesPost/${product.images[0].imageUrl}`}
+                                                    src={product.images[0].imageUrl}
                                                     style={{ width: '100%', height: 'auto' }}
                                                 />
                                             ) : (

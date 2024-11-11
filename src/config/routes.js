@@ -16,6 +16,7 @@ const routes = {
     favourite: '/favourite',
     forgotpass: '/forgotpass',
     resetpass: '/reset-password',
+    return: '/return/:id',
 };
 
 export default routes;

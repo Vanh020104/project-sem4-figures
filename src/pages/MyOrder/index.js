@@ -375,16 +375,15 @@ function MyOrder() {
                             <tbody>
                                 {orderDetails.map((detail, index) => (
                                     <tr key={index} style={{ color: 'black', marginBottom: 50 }}>
-                                        <td>
-                                            <span style={{ textAlign: 'center' }}>{detail.id.productId}</span>
+                                        <td style={{ textAlign: 'center' }}>
+                                            <span style={{ textAlign: 'center' }}>{detail.product.productId}</span>
                                         </td>
                                         <td style={{ textAlign: 'center' }}>
-                                            {/* <img
+                                            <img
                                                 style={{ width: 100 }}
-                                                src={`http://localhost:8080/api/v1/product-images/imagesPost/${detail.product.images[0].imageUrl}`}
+                                                src={detail.product.images[0].imageUrl}
                                                 alt={detail.product.name}
-                                            /> */}
-                                            <img style={{ width: 100 }} src={image1}></img>
+                                            />
 
                                             <br />
                                             {detail.product.name}
@@ -395,16 +394,32 @@ function MyOrder() {
                                         {orderStatus === 'COMPLETE' && (
                                             <td style={{ textAlign: 'center' }}>
                                                 <Link
-                                                    to={`/productdetails/${detail.id.productId}?orderId=${detail.id.orderId}`}
+                                                    to={`/productdetails/${detail.product.productId}?orderId=${selectedOrderId}&detailId=${detail.id}`}
                                                     style={{
                                                         color: 'white',
                                                         fontWeight: 600,
                                                         backgroundColor: '#3cbc1c',
                                                         padding: 5,
                                                         borderRadius: 3,
+                                                        width: 100,
                                                     }}
                                                 >
                                                     Feedback
+                                                </Link>
+                                                <br />
+                                                <p style={{ margin: '10px 0' }}></p>
+                                                <Link
+                                                    to={`/return/${detail.product.productId}?detailId=${detail.id}`}
+                                                    style={{
+                                                        color: 'white',
+                                                        fontWeight: 600,
+                                                        backgroundColor: 'red',
+                                                        padding: 5,
+                                                        borderRadius: 3,
+                                                        width: 100,
+                                                    }}
+                                                >
+                                                    Return
                                                 </Link>
                                             </td>
                                         )}
