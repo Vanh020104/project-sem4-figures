@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-
+import { useNavigate } from 'react-router-dom';
 function Shop() {
     const [products, setProducts] = useState([]);
     const [category, setCategory] = useState([]);
@@ -10,12 +10,28 @@ function Shop() {
     const [currentPage, setCurrentPage] = useState(1);
     const [searchTerm, setSearchTerm] = useState('');
     const [minPrice, setMinPrice] = useState(0);
-    const [maxPrice, setMaxPrice] = useState(90000);
+    const [maxPrice, setMaxPrice] = useState(900);
     const [selectedCategory, setSelectedCategory] = useState(null);
     const productsPerPage = 9;
     const userId = localStorage.getItem('userId');
     const [favoriteProductId, setFavoriteProductId] = useState(null);
+    const [selectedProducts, setSelectedProducts] = useState([]);
+    const navigate = useNavigate();
+    const handleCompareClick = (product) => {
+        setSelectedProducts((prevSelected) => {
+            const updatedSelected = prevSelected.find((p) => p.productId === product.productId)
+                ? prevSelected.filter((p) => p.productId !== product.productId) // Xóa sản phẩm
+                : [...prevSelected, product]; // Thêm sản phẩm
 
+            // Lưu vào localStorage
+            localStorage.setItem('selectedProducts', JSON.stringify(updatedSelected));
+            return updatedSelected;
+        });
+    };
+
+    const handleNavigateToCompare = () => {
+        navigate('/compareProducts', { state: { selectedProducts } }); // Điều hướng đến trang so sánh
+    };
     useEffect(() => {
         // Fetch products
         const fetchProducts = async () => {
@@ -213,7 +229,7 @@ function Shop() {
                                                                 type="range"
                                                                 name="minPrice"
                                                                 min="0"
-                                                                max="90000"
+                                                                max="900"
                                                                 value={minPrice}
                                                                 onChange={handlePriceRangeChange}
                                                                 style={{
@@ -226,7 +242,7 @@ function Shop() {
                                                                 type="range"
                                                                 name="maxPrice"
                                                                 min="0"
-                                                                max="90000"
+                                                                max="900"
                                                                 value={maxPrice}
                                                                 onChange={handlePriceRangeChange}
                                                                 style={{
@@ -342,6 +358,22 @@ function Shop() {
                                                                 }}
                                                                 onClick={() => handleFavoriteClick(product.productId)}
                                                             />
+                                                            <i
+                                                                onClick={() => handleCompareClick(product)}
+                                                                className={`fas ${
+                                                                    selectedProducts.find(
+                                                                        (p) => p.productId === product.productId,
+                                                                    )
+                                                                        ? 'fa-minus-circle'
+                                                                        : 'fa-plus-circle'
+                                                                }  secondary`}
+                                                                style={{
+                                                                    cursor: 'pointer',
+                                                                    color: '#3cbc1c',
+                                                                    fontSize: 20,
+                                                                    marginLeft: 7,
+                                                                }}
+                                                            ></i>
                                                         </div>
                                                     </div>
                                                     <h5 className="mb-12" style={{ color: '#fff' }}>
@@ -399,8 +431,6 @@ function Shop() {
                                             </div>
                                         ))}
                                     </div>
-
-                                    {/* end products */}
 
                                     <ul
                                         className="pagination"

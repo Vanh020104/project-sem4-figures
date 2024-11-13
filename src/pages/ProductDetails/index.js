@@ -7,7 +7,7 @@ import image3 from '~/assets/media/products/p-3.jpg';
 import image6 from '~/assets/media/users/cu-1.png';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
+import { useNavigate, Link } from 'react-router-dom';
 function ProductDetails() {
     const { id } = useParams();
     const location = useLocation();
@@ -22,6 +22,7 @@ function ProductDetails() {
     const [feedback, setFeedback] = useState([]);
     const [rateStar, setRateStar] = useState(5);
     const [comment, setComment] = useState('');
+    const navigate = useNavigate();
     useEffect(() => {
         const fetchProduct = async () => {
             try {
@@ -74,6 +75,7 @@ function ProductDetails() {
                     },
                 },
             );
+            navigate('/');
             toast.success('Feedback submitted successfully!');
         } catch (error) {
             console.error('Failed to submit feedback:', error);
@@ -84,7 +86,7 @@ function ProductDetails() {
     const handleQuantityChange = (e) => {
         const newQuantity = Number(e.target.value);
 
-        if (newQuantity > product.stockQuantity) {
+        if (newQuantity > product.stockQuantity - product.reservedQuantity) {
             toast.error('The quantity exceeds the available stock!');
             setQuantity(product.stockQuantity); // Reset to max available quantity
         } else {

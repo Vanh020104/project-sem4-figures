@@ -22,7 +22,9 @@ import Favorite from '~/pages/Favourite';
 import ForgotPass from '~/pages/FogotPass';
 import ResetPass from '~/pages/ResetPassword';
 import Return from '~/pages/Return';
-// Public routes
+import OrderPaid from '~/pages/OrderPaid';
+import CompareProducts from '~/pages/CompareProducts';
+
 export const publicRoutes = [
     { path: config.routes.home, component: Home },
     { path: config.routes.shop, component: Shop, component: Shop },
@@ -33,8 +35,10 @@ export const publicRoutes = [
     { path: config.routes.blogdetails, component: BlogDetails, component: BlogDetails },
     { path: config.routes.contact, component: Contact, component: Contact },
     { path: config.routes.myorders, component: MyOrder, component: MyOrder },
+    { path: config.routes.orderPaid, component: OrderPaid, component: OrderPaid },
     { path: config.routes.profile, component: Profile, component: Profile },
     { path: config.routes.favourite, component: Favorite, component: Favorite },
+    { path: config.routes.compareProducts, component: CompareProducts, component: CompareProducts },
     { path: config.routes.blogs, component: Blogs, component: Blogs },
     { path: config.routes.return, component: Return, component: Return },
     { path: config.routes.register, component: Register, layout: null },

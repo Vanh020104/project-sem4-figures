@@ -17,6 +17,8 @@ const routes = {
     forgotpass: '/forgotpass',
     resetpass: '/reset-password',
     return: '/return/:id',
+    orderPaid: '/orderPaid',
+    compareProducts: '/compareproducts',
 };
 
 export default routes;

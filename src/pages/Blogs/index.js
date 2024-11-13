@@ -79,6 +79,7 @@ function Blogs() {
                                         </div>
                                         <div className="img-block">
                                             <img src={blog.imageTitle} style={{ width: 330 }} alt={blog.title} />
+
                                             <div className="overlay" />
                                             <div className="text-block">
                                                 <p style={{ fontSize: 14 }} className="light-gray mb-16">
