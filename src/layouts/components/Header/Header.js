@@ -333,7 +333,7 @@ function Header() {
     };
 
     const setupSocket = (userId) => {
-        const socket = new SockJS('http://localhost:8080/ws');
+        const socket = new SockJS('http://localhost:8080/ws/customer');
         const stompClient = Stomp.over(socket);
 
         stompClient.connect(

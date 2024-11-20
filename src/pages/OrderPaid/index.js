@@ -127,7 +127,7 @@ function OrderPaid() {
                                         <table className="cart-table mb-32" style={{ width: '100%' }}>
                                             <thead>
                                                 <tr>
-                                                    <th style={{ fontSize: 21, textAlign: 'center' }}>Order Details</th>
+                                                    <th style={{ fontSize: 21, textAlign: 'center' }}>No</th>
                                                     <th style={{ fontSize: 21, textAlign: 'center' }}>
                                                         Quantity Returned
                                                     </th>
@@ -140,7 +140,7 @@ function OrderPaid() {
                                                 {orders.map((order) => (
                                                     <tr key={order.id}>
                                                         <td style={{ textAlign: 'center' }}>
-                                                            {order.orderDetailId.substring(0, 15)}
+                                                            {order.orderDetail.id.substring(0, 15)}
                                                         </td>
                                                         <td className="pd" style={{ textAlign: 'center' }}>
                                                             {order.quantityReturned}
@@ -287,64 +287,6 @@ function OrderPaid() {
                         >
                             &times;
                         </button>
-                        {/* <h4 style={{ textAlign: 'center', color: '#3cbc1c', marginBottom: 20 }}>Order Paid Details</h4>
-                        <table className="cart-table mb-32" style={{ width: '100%' }}>
-                            <thead>
-                                <tr>
-                                    <th style={{ fontSize: 19, textAlign: 'center', color: 'black', fontWeight: 400 }}>
-                                        Id
-                                    </th>
-                                    <th style={{ fontSize: 19, textAlign: 'center', color: 'black', fontWeight: 400 }}>
-                                        Image
-                                    </th>
-                                    <th style={{ fontSize: 19, textAlign: 'center', color: 'black', fontWeight: 400 }}>
-                                        Reason
-                                    </th>
-                                    <th style={{ fontSize: 19, textAlign: 'center', color: 'black', fontWeight: 400 }}>
-                                        Details
-                                    </th>
-                                </tr>
-                                <td colSpan="10" style={{ color: '#999', marginBottom: 20 }}>
-                                    <hr style={{ color: '#999', marginBottom: 20 }} />
-                                </td>
-                            </thead>
-                            <tbody>
-                                <tr style={{ color: 'black', marginBottom: 50 }}>
-                                    <td style={{ textAlign: 'center' }}>
-                                        <span style={{ textAlign: 'center' }}>
-                                            {orderDetails.orderDetailId.substring(0, 10)}
-                                        </span>
-                                    </td>
-                                    <td style={{ textAlign: 'center' }}>
-                                        <div
-                                            style={{
-                                                display: 'flex',
-                                                flexWrap: 'wrap',
-                                                gap: '5px',
-                                                justifyContent: 'center',
-                                            }}
-                                        >
-                                            {orderDetails.images && orderDetails.images.length > 0 ? (
-                                                orderDetails.images.map((imageUrl, index) => (
-                                                    <div key={index} style={{ width: '30%' }}>
-                                                        <img
-                                                            style={{ width: '130px' }}
-                                                            src={imageUrl}
-                                                            alt={`Product Image ${index + 1}`}
-                                                        />
-                                                    </div>
-                                                ))
-                                            ) : (
-                                                <span>No images available</span>
-                                            )}
-                                        </div>
-                                    </td>
-                                    <td style={{ textAlign: 'center' }}>{orderDetails.reason}</td>
-
-                                    <td style={{ textAlign: 'center' }}>{orderDetails.reasonNote}</td>
-                                </tr>
-                            </tbody>
-                        </table> */}
 
                         <div className="card">
                             <div className="card-body">
@@ -355,7 +297,7 @@ function OrderPaid() {
                                     <tbody>
                                         <tr>
                                             <th style={{ textAlign: 'center' }}>Order Details</th>
-                                            <td>{orderDetails.orderDetailId}</td>
+                                            <td>{orderDetails.orderDetail.id}</td>
                                         </tr>
                                         <tr>
                                             <th style={{ textAlign: 'center' }}>Quantity Returned</th>

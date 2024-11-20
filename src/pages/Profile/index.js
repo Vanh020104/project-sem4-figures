@@ -45,46 +45,46 @@ function Profile() {
                     </div>
                 </div>
             </div>
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                <div className="profile-card">
+                    <div className="profile-img">
+                        <img
+                            alt="Profile Image"
+                            height={150}
+                            src="https://storage.googleapis.com/a1aa/image/1gcDo9qCA04OIBQMbQiu3kytFJLqf5UbLqNZheTD4UuahbjTA.jpg"
+                            width={150}
+                        />
+                    </div>
+                    <div className="connect">
+                        <i className="fas fa-user"></i>
+                        Connect
+                    </div>
+                    <div className="message">
+                        <i className="fas fa-comment"></i>
+                        Message
+                    </div>
+                    <h2>{userData.username}</h2>
+                    <h4>{userData.email}</h4>
 
-            <div className="profile-card" style={{ marginLeft: 170 }}>
-                <div className="profile-img">
-                    <img
-                        alt="Profile Image"
-                        height={150}
-                        src="https://storage.googleapis.com/a1aa/image/1gcDo9qCA04OIBQMbQiu3kytFJLqf5UbLqNZheTD4UuahbjTA.jpg"
-                        width={150}
-                    />
-                </div>
-                <div className="connect">
-                    <i className="fas fa-user"></i>
-                    Connect
-                </div>
-                <div className="message">
-                    <i className="fas fa-comment"></i>
-                    Message
-                </div>
-                <h2>{userData.username}</h2>
-                <h4>{userData.email}</h4>
-
-                <div className="stats">
-                    <div>
-                        <h3>07</h3>
-                        <p>Orders</p>
+                    <div className="stats">
+                        <div>
+                            <h3>07</h3>
+                            <p>Orders</p>
+                        </div>
+                        <div>
+                            <h3>12</h3>
+                            <p>Favorite products</p>
+                        </div>
+                        <div>
+                            <h3>01</h3>
+                            <p>Feedback</p>
+                        </div>
                     </div>
-                    <div>
-                        <h3>12</h3>
-                        <p>Favorite products</p>
-                    </div>
-                    <div>
-                        <h3>01</h3>
-                        <p>Feedback</p>
-                    </div>
+                    <a className="btn" href="#">
+                        Show more
+                    </a>
                 </div>
-                <a className="btn" href="#">
-                    Show more
-                </a>
             </div>
-
             {/* Blogs Area End */}
         </>
     );
